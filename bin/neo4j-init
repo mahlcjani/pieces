@@ -1,0 +1,66 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i bash
+
+set -eo pipefail
+
+declare -r BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+declare -r PROJECT_DIR=$(dirname "${BIN_DIR}")
+
+declare neo4j_home=/var/tmp/neo4j
+declare neo4j_user="neo4j"
+declare neo4j_password="nosecret"
+declare neo4j_script="${PROJECT_DIR}/src/lib/data/house-of-windsor.cypher"
+
+while (( "$#" )); do
+    case "$1" in
+        -h|--home)
+            neo4j_home="$2"
+            shift 2
+            ;;
+        -u|--user)
+            neo4j_user="$2"
+            shift 2
+            ;;
+        -p|--password)
+            neo4j_password="$2"
+            shift 2
+            ;;
+        -s|--script)
+            neo4j_script="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            shift 1
+            ;;
+    esac
+done
+
+echo "Try to stop neo4j if running"
+NEO4J_HOME="${neo4j_home}" neo4j stop ||:
+
+[[ -f "${neo4j_home}/run/neo4j.pid" ]] && {
+    kill -9 $(cat "${neo4j_home}/run/neo4j.pid") ||:
+}
+
+echo "Cleaning up neo4j home directory"
+rm -rf "${neo4j_home}" ||:
+mkdir -p "${neo4j_home}"
+
+NEO4J_HOME="${neo4j_home}" \
+neo4j-admin dbms set-initial-password "${neo4j_password}"
+
+NEO4J_HOME="${neo4j_home}" NEO4J_CONF="${PROJECT_DIR}/neo4j/conf" \
+neo4j start
+
+while read -r line; do
+    echo "${line}"
+    if [[ "${line}" =~ .*Started\.$ ]]; then
+        break
+    fi
+    if [[ "${line}" =~ .*ERROR.* ]]; then
+        exit
+    fi
+done < <(tail --follow "${neo4j_home}/logs/neo4j.log" )
+
+cypher-shell --user ${neo4j_user} --password "${neo4j_password}" --file "${neo4j_script}"

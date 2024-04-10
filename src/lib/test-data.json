@@ -1,0 +1,272 @@
+{
+  "testedPerson": {
+    "id": "zeus",
+    "sex": "Man",
+    "name": "Zeus",
+    "firstName": "Zeus",
+    "surname": "Olimpian",
+    "birthDate": "1970-01-01",
+    "spouses": [
+      {
+        "id": "hera",
+        "sex": "Woman",
+        "name": "Hera",
+        "firstName": "Hera",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01",
+        "rel": {
+          "beginDate": "1970-01-01"
+        }
+      }
+    ],
+    "children": [
+      {
+        "id": "apollo",
+        "sex": "Man",
+        "name": "Apollo",
+        "firstName": "Apollo",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "ares",
+        "sex": "Man",
+        "name": "Ares",
+        "firstName": "Ares",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "artemis",
+        "sex": "Woman",
+        "name": "Artemis",
+        "firstName": "Artemis",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "athena",
+        "sex": "Woman",
+        "name": "Athena",
+        "firstName": "Athena",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "dionysus",
+        "sex": "Man",
+        "name": "Dionysus",
+        "firstName": "Dionysus",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "eileithyia",
+        "sex": "Woman",
+        "name": "Eileithyia",
+        "firstName": "Eileithyia",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "hebe",
+        "sex": "Woman",
+        "name": "Hebe",
+        "firstName": "Hebe",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      }
+    ],
+    "parents": [
+      {
+        "id": "cronus",
+        "sex": "Man",
+        "name": "Cronus",
+        "firstName": "Cronus",
+        "surname": "Titan",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "rhea",
+        "sex": "Woman",
+        "name": "Rhea",
+        "firstName": "Rhea",
+        "surname": "Titan",
+        "birthDate": "1970-01-01"
+      }
+    ],
+    "siblings": [
+      {
+        "id": "hestia",
+        "sex": "Woman",
+        "name": "Hestia",
+        "firstName": "Hestia",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "hades",
+        "sex": "Man",
+        "name": "Hades",
+        "firstName": "Hades",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "hera",
+        "sex": "Woman",
+        "name": "Hera",
+        "firstName": "Hera",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "poseidon",
+        "sex": "Man",
+        "name": "Poseidon",
+        "firstName": "Poseidon",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      },
+      {
+        "id": "demeter",
+        "sex": "Woman",
+        "name": "Demeter",
+        "firstName": "Demeter",
+        "surname": "Olimpian",
+        "birthDate": "1970-01-01"
+      }
+    ],
+
+    "suggestedChildren": [
+
+    ],
+    "suggestedSpouses": [
+
+    ]
+
+  },
+  "people": [
+    {
+      "id": "cronus",
+      "sex": "Man",
+      "name": "Cronus",
+      "firstName": "Cronus",
+      "surname": "Titan",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "rhea",
+      "sex": "Woman",
+      "name": "Rhea",
+      "firstName": "Rhea",
+      "surname": "Titan",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "zeus",
+      "sex": "Man",
+      "name": "Zeus",
+      "firstName": "Zeus",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "hestia",
+      "sex": "Woman",
+      "name": "Hestia",
+      "firstName": "Hestia",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "hades",
+      "sex": "Man",
+      "name": "Hades",
+      "firstName": "Hades",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "hera",
+      "sex": "Woman",
+      "name": "Hera",
+      "firstName": "Hera",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "poseidon",
+      "sex": "Man",
+      "name": "Poseidon",
+      "firstName": "Poseidon",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "demeter",
+      "sex": "Woman",
+      "name": "Demeter",
+      "firstName": "Demeter",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "apollo",
+      "sex": "Man",
+      "name": "Apollo",
+      "firstName": "Apollo",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "ares",
+      "sex": "Man",
+      "name": "Ares",
+      "firstName": "Ares",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "artemis",
+      "sex": "Woman",
+      "name": "Artemis",
+      "firstName": "Artemis",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "athena",
+      "sex": "Woman",
+      "name": "Athena",
+      "firstName": "Athena",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "dionysus",
+      "sex": "Man",
+      "name": "Dionysus",
+      "firstName": "Dionysus",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "eileithyia",
+      "sex": "Woman",
+      "name": "Eileithyia",
+      "firstName": "Eileithyia",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    },
+    {
+      "id": "hebe",
+      "sex": "Woman",
+      "name": "Hebe",
+      "firstName": "Hebe",
+      "surname": "Olimpian",
+      "birthDate": "1970-01-01"
+    }
+  ]
+}
+

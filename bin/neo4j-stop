@@ -1,0 +1,34 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i bash
+
+set -eo pipefail
+
+declare -r BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+declare -r PROJECT_DIR=$(dirname "${BIN_DIR}")
+
+declare neo4j_home=/var/tmp/neo4j
+
+while (( "$#" )); do
+    case "$1" in
+        -h|--home)
+            neo4j_home="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            shift 1
+            ;;
+    esac
+done
+
+[[ -d "${neo4j_home}" ]] || {
+    echo >&2 "${neo4j_home}" is not valid Neo4j home
+    exit 2
+}
+
+#[[ -f "${neo4j_home}/run/neo4j.pid" ]] || {
+#    echo "Looks like Neo4j is not running (missing pid)"
+#}
+
+NEO4J_HOME="${neo4j_home}" neo4j stop
+

@@ -1,0 +1,14 @@
+
+.formControl {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  .label {
+    min-width: 10rem;
+  }
+
+  .control {
+    flex: 1;
+  }
+}
