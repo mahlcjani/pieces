@@ -3,8 +3,8 @@
 
 set -eo pipefail
 
-declare -r BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
-declare -r PROJECT_DIR=$(dirname "${BIN_DIR}")
+declare -r BIN_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)"
+declare -r PROJECT_DIR="$(dirname "${BIN_DIR}")"
 
 declare neo4j_home=/var/tmp/neo4j
 
@@ -26,9 +26,5 @@ done
     exit 2
 }
 
-#[[ -f "${neo4j_home}/run/neo4j.pid" ]] || {
-#    echo "Looks like Neo4j is not running (missing pid)"
-#}
-
-NEO4J_HOME="${neo4j_home}" neo4j stop
+NEO4J_HOME="${neo4j_home}" neo4j-admin server stop
 
