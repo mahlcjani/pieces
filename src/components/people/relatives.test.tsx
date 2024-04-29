@@ -16,10 +16,15 @@ const test = base.extend({
     return {
       id: rel.id,
       beginDate: new Date(rel.beginDate),
-      spouses: {
-        ...rel.spouses,
-        sex: rel.spouses.sex as "Man" | "Woman",
-        birthDate: new Date(rel.spouses.birthDate)
+      wife: {
+        ...rel.wife,
+        sex: rel.wife.sex as "Man" | "Woman",
+        birthDate: new Date(rel.wife.birthDate)
+      },
+      husband: {
+        ...testData.testedPerson,
+        sex: testData.testedPerson.sex as "Man" | "Woman",
+        birthDate: new Date(testData.testedPerson.birthDate)
       }
     }
   }),
@@ -90,8 +95,8 @@ describe("Lists of relatives", () => {
       expect(screen.getByRole("table", { name: /spouses/i })).toBeInTheDocument();
 
       marriages_.forEach((value: Marriage) => {
-        expect(screen.getByRole("row", { name: new RegExp(value.spouses.firstName) })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: new RegExp(value.spouses.firstName) })).toBeInTheDocument();
+        expect(screen.getByRole("row", { name: new RegExp(value.wife.firstName) })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: new RegExp(value.wife.firstName) })).toBeInTheDocument();
       })
 
       expect(screen.getAllByRole("button", { name: /delete relationship/i }).length).equals(marriages_.length);

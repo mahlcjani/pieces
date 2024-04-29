@@ -10,7 +10,7 @@
       {
         "id": "zeus-hera",
         "beginDate": "1970-01-01",
-        "spouses": {
+        "wife": {
           "id": "hera",
           "sex": "Woman",
           "name": "Hera",
