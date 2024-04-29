@@ -1,42 +1,56 @@
 import { beforeEach, describe, expect, test as base, vi } from "vitest";
 import { render, screen, } from "@/lib/test-utils";
 
-import { Children, Parents, Siblings, Spouses } from "./relatives";
-import { Person } from "@/lib/data.d";
+import { Children, Parents, Siblings, Marriages } from "./relatives";
+import { Parentage, type Marriage, type Person } from "@/lib/data.d";
 
 import testData from "@/lib/test-data.json"
 
 const test = base.extend({
   testPerson: {
-    id: testData.testedPerson.id,
+    ...testData.testedPerson,
     sex: testData.testedPerson.sex as "Man" | "Woman",
-    name: testData.testedPerson.name,
-    firstName: testData.testedPerson.firstName,
-    surname: testData.testedPerson.surname,
     birthDate: new Date(testData.testedPerson.birthDate)
   },
-  spouses: testData.testedPerson.spouses.map((p) => {
+  marriages: testData.testedPerson.marriages.map((rel) => {
     return {
-      ...p,
-      sex: p.sex as "Man" | "Woman",
-      birthDate: new Date(p.birthDate),
-      rel: {
-        beginDate: new Date(p.rel.beginDate)
+      id: rel.id,
+      beginDate: new Date(rel.beginDate),
+      spouses: {
+        ...rel.spouses,
+        sex: rel.spouses.sex as "Man" | "Woman",
+        birthDate: new Date(rel.spouses.birthDate)
       }
     }
   }),
   children: testData.testedPerson.children.map((p) => {
     return {
-      ...p,
-      sex: p.sex as "Man" | "Woman",
-      birthDate: new Date(p.birthDate)
+      id: `rel-${p.id}`,
+      child: {
+        ...p,
+        sex: p.sex as "Man" | "Woman",
+        birthDate: new Date(p.birthDate)
+      },
+      parent: {
+        ...testData.testedPerson,
+        sex: testData.testedPerson.sex as "Man" | "Woman",
+        birthDate: new Date(testData.testedPerson.birthDate)
+      }
     }
   }),
   parents: testData.testedPerson.parents.map((p) => {
     return {
-      ...p,
-      sex: p.sex as "Man" | "Woman",
-      birthDate: new Date(p.birthDate)
+      id: `rel-${p.id}`,
+      parent: {
+        ...p,
+        sex: p.sex as "Man" | "Woman",
+        birthDate: new Date(p.birthDate)
+      },
+      child: {
+        ...testData.testedPerson,
+        sex: testData.testedPerson.sex as "Man" | "Woman",
+        birthDate: new Date(testData.testedPerson.birthDate)
+      }
     }
   }),
   siblings: testData.testedPerson.siblings.map((p) => {
@@ -68,32 +82,32 @@ beforeEach(() => {
 describe("Lists of relatives", () => {
 
   describe("Spouses", () => {
-    test("should render list of spouses", ({testPerson, spouses}) => {
+    test("should render list of spouses", ({testPerson, marriages}) => {
       // Need to figure it out why vitest creates union for array properties
-      const spouses_ = Array.isArray(spouses) ? spouses : [spouses];
-      render(<Spouses person={testPerson} spouses={spouses_} />);
+      const marriages_ = Array.isArray(marriages) ? marriages : [marriages];
+      render(<Marriages person={testPerson} records={marriages_} />);
 
       expect(screen.getByRole("table", { name: /spouses/i })).toBeInTheDocument();
 
-      spouses_.forEach((value: Person) => {
-        expect(screen.getByRole("row", { name: new RegExp(value.firstName) })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: new RegExp(value.firstName) })).toBeInTheDocument();
+      marriages_.forEach((value: Marriage) => {
+        expect(screen.getByRole("row", { name: new RegExp(value.spouses.firstName) })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: new RegExp(value.spouses.firstName) })).toBeInTheDocument();
       })
 
-      expect(screen.getAllByRole("button", { name: /delete relationship/i }).length).equals(spouses_.length);
+      expect(screen.getAllByRole("button", { name: /delete relationship/i }).length).equals(marriages_.length);
     });
   });
 
   describe("Children", () => {
     test("should render children", ({testPerson, children}) => {
       const children_ = Array.isArray(children) ? children : [children];
-      render(<Children person={testPerson} data={children_} />);
+      render(<Children person={testPerson} records={children_} />);
 
       expect(screen.getByRole("table", { name: /children/i })).toBeInTheDocument();
 
-      children_.forEach((value: Person) => {
-        expect(screen.getByRole("row", { name: new RegExp(value.firstName) })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: new RegExp(value.firstName) })).toBeInTheDocument();
+      children_.forEach((value: Parentage) => {
+        expect(screen.getByRole("row", { name: new RegExp(value.child.firstName) })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: new RegExp(value.child.firstName) })).toBeInTheDocument();
       })
 
       expect(screen.getAllByRole("button", { name: /delete child/i }).length).equals(children_.length);
@@ -105,13 +119,13 @@ describe("Lists of relatives", () => {
       // Need to figure it out why vitest creates union for array properties
       const parents_ = Array.isArray(parents) ? parents : [parents];
 
-      render(<Parents person={testPerson} parents={parents_} />);
+      render(<Parents person={testPerson} records={parents_} />);
 
       expect(screen.getByRole("table", { name: /parents/i })).toBeInTheDocument();
 
-      parents_.forEach((value: Person) => {
-        expect(screen.getByRole("row", { name: new RegExp(value.firstName) })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: new RegExp(value.firstName) })).toBeInTheDocument();
+      parents_.forEach((value: Parentage) => {
+        expect(screen.getByRole("row", { name: new RegExp(value.parent.firstName) })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: new RegExp(value.parent.firstName) })).toBeInTheDocument();
       })
     });
   });
@@ -133,20 +147,20 @@ describe("Lists of relatives", () => {
   });
 
   describe("All combined", () => {
-    test("should render all relatives together ", ({testPerson, spouses, children, parents, siblings}) => {
+    test("should render all relatives together ", ({testPerson, marriages, children, parents, siblings}) => {
       render(
         <>
-          <Spouses
+          <Marriages
             person={testPerson}
-            spouses={Array.isArray(spouses) ? spouses : [spouses]}
+            records={Array.isArray(marriages) ? marriages : [marriages]}
           />
           <Children
             person={testPerson}
-            data={Array.isArray(children) ? children : [children]}
+            records={Array.isArray(children) ? children : [children]}
           />
           <Parents
             person={testPerson}
-            parents={Array.isArray(parents) ? parents : [parents]}
+            records={Array.isArray(parents) ? parents : [parents]}
           />
           <Siblings
             person={testPerson}

@@ -1,12 +1,16 @@
 import { type Person } from "@/lib/data.d";
+
 import {
   deletePerson,
+  updatePerson,
   fetchChildren,
+  fetchMarriages,
   fetchParents,
   fetchPerson,
   fetchSiblings,
-  fetchSpouses
 } from "@/lib/data";
+
+import { headers } from "next/headers";
 
 // GET /api/v1/people/[id]
 export async function GET(
@@ -19,22 +23,25 @@ export async function GET(
   const person: Person|undefined = await fetchPerson(params.id);
   if (person) {
     // Fetch whatever required
-    const [spouses, children, parents, siblings] = await Promise.all([
-      moreInfo.includes("spouses") ? fetchSpouses(person.id) : [],
+    const [marriages, children, parents, siblings] = await Promise.all([
+      moreInfo.includes("marriages") ? fetchMarriages(person.id) : [],
       moreInfo.includes("children") ? fetchChildren(person.id) : [],
       moreInfo.includes("parents") ? fetchParents(person.id) : [],
       moreInfo.includes("siblings") ? fetchSiblings(person.id) : []
     ])
 
     let result: any = {
-      ...person
-    }
+      ...person,
+      birthDate: person.birthDate?.toISOString().substring(0, 10),
+      deathDate: person.deathDate?.toISOString().substring(0, 10),
+      nameDate: person.nameDate?.toISOString().substring(0, 10),
+  }
 
     // Compose result
-    if (moreInfo.includes("spouses")) {
+    if (moreInfo.includes("marriages")) {
       result = {
         ...result,
-        spouses: spouses
+        marriages: marriages
       }
     }
     if (moreInfo.includes("children")) {
@@ -71,5 +78,34 @@ export async function DELETE(
   } catch (e: any) {
     return Response.json({}, {status: 404, statusText: e.message});
   }
-  return Response.json({}, {status: 400, statusText: "Deleted"});
+  return Response.json({}, {status: 200, statusText: "Deleted"});
+}
+
+// Update only as resourse ids are allocated by the database.
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string }
+}) {
+
+  const headersList = headers();
+  const contentType = headersList.get("Content-type");
+
+  let formData: FormData = new FormData();
+
+  if ("application/json" == contentType) {
+    const json = await request.json();
+    for (const key in json) {
+      formData.append(key, json[key]);
+    }
+  } else if ("application/x-www-form-urlencoded" == contentType ||
+             "multipart/form-data" == contentType) {
+    formData = await request.formData();
+  }
+
+  try {
+    await updatePerson(params.id, formData);
+  } catch (e: any) {
+    return Response.json({}, {status: 404, statusText: e.message});
+  }
+  return Response.json({}, {status: 200, statusText: "Updated"});
 }

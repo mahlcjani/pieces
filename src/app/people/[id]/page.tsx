@@ -6,15 +6,15 @@ import {
   Children,
   Parents,
   Siblings,
-  Spouses
+  Marriages
 } from "@/components/people/relatives";
 
 import {
   fetchChildren,
+  fetchMarriages,
   fetchParents,
   fetchPerson,
-  fetchSiblings,
-  fetchSpouses
+  fetchSiblings
 } from "@/lib/data";
 
 import {
@@ -38,7 +38,7 @@ type SearchParams = {
   page?: number;
 }
 
-export default async function Page({
+export default async function Person({
   params,
   searchParams,
 }: {
@@ -50,9 +50,9 @@ export default async function Page({
   const query = searchParams?.query || "";
   const page = Number(searchParams?.page) || 1;
 
-  const [person, spouses, children, parents, siblings] = await Promise.all([
+  const [person, marriages, children, parents, siblings] = await Promise.all([
     fetchPerson(id),
-    fetchSpouses(id),
+    fetchMarriages(id),
     fetchChildren(id),
     fetchParents(id),
     fetchSiblings(id)
@@ -91,13 +91,13 @@ export default async function Page({
           </TabPanel>
           <TabPanel value={1}>
             <Stack spacing={1.5}>
-              <Spouses person={person} spouses={spouses} />
+              <Marriages person={person} records={marriages} />
               <Divider />
-              <Children person={person} data={children} />
+              <Children person={person} records={children} />
               { parents.length > 0 && (
                 <>
                   <Divider />
-                  <Parents person={person} parents={parents} />
+                  <Parents person={person} records={parents} />
                 </>
               )}
               { siblings.length > 0 && (

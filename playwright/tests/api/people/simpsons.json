@@ -1,0 +1,43 @@
+{
+  "homer": {
+    "sex": "Man",
+    "name": "Homer",
+    "firstName": "Homer",
+    "middleNames": "Jay",
+    "surname": "Simpson",
+    "birthDate": "1956-05-12"
+  },
+  "marge": {
+    "sex": "Woman",
+    "name": "Marge",
+    "firstName": "Marjorie",
+    "middleNames": "Jacqueline",
+    "surname": "Simpson",
+    "birthName": "Bouvier",
+    "birthDate": "1956-10-01"
+  },
+  "bart": {
+    "sex": "Man",
+    "name": "Bart",
+    "firstName": "Bartholomew",
+    "middleNames": "Jojo",
+    "surname": "Simpson",
+    "birthDate": "1982-02-23"
+  },
+  "lisa": {
+    "sex": "Woman",
+    "name": "Lisa",
+    "firstName": "Lisa",
+    "middleNames": "Marie",
+    "surname": "Simpson",
+    "birthDate": "1984-05-04"
+  },
+  "maggie": {
+    "sex": "Woman",
+    "name": "Maggie",
+    "firstName": "Margaret",
+    "middleNames": "Lenny",
+    "surname": "Simpson",
+    "birthDate": "1990-08-18"
+  }
+}

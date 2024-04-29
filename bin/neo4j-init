@@ -58,5 +58,22 @@ while read -r line; do
     [[ ! "${line}" =~ .*ERROR.* ]] || exit
 done < <(tail --follow "${neo4j_home}/logs/neo4j.log")
 
+cat <<EOF | cypher-shell --user ${neo4j_user} --password "${neo4j_password}"
+SHOW INDEXES;
+SHOW CONSTRAINTS;
+
+CREATE INDEX person_range_node_index_firstName IF NOT EXISTS
+FOR (p:Person) ON (p.firstName);
+
+CREATE INDEX person_range_node_index_surname IF NOT EXISTS
+FOR (p:Person) ON (p.surname);
+
+CREATE INDEX person_range_node_index_middleNames IF NOT EXISTS
+FOR (p:Person) ON (p.middleNames);
+
+CREATE CONSTRAINT person_name IF NOT EXISTS
+FOR (p:Person) REQUIRE p.name IS UNIQUE;
+EOF
+
 cypher-shell --user ${neo4j_user} --password "${neo4j_password}" --file "${neo4j_script}"
 

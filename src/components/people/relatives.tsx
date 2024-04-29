@@ -8,12 +8,16 @@ import {
 
 import {
   AddSpouse,
-  EditSpouse,
+  EditMarriage,
   LinkSpouse,
   UnlinkSpouse
 } from "./buttons/spouses";
 
-import { type Person } from "@/lib/data.d";
+import {
+  type Marriage,
+  type Parentage,
+  type Person
+} from "@/lib/data.d";
 
 import { formatDate4Form } from "@/lib/utils";
 
@@ -23,29 +27,25 @@ import {
   Table
 } from "@mui/joy";
 
-import { useState } from "react";
-
-
-export function Spouses({person, spouses}: {person: Person, spouses: Person[]}) {
-  // const [spouses, setSpouses] = useState(spouses);
+export function Marriages({person, records}: {person: Person, records: Marriage[]}) {
   return (
     <Table>
       <caption style={{fontWeight: "bold", textAlign: "left"}}>
         Spouses
       </caption>
       <tbody>
-      {spouses?.map((p) => (
-        <tr key={p.id}>
+      {records?.map((r) => (
+        <tr key={r.id}>
           <td>
-            <Link href={`/people/${p.id}`}>
-              {p.firstName}
+            <Link href={`/people/${(person.sex === "Man" ? r.wife : r.husband).id}`}>
+              {(person.sex === "Man" ? r.wife : r.husband).firstName}
             </Link>
           </td>
-          <td>{formatDate4Form(p.rel.beginDate)} - {formatDate4Form(p.rel.endDate)}</td>
-          <td>{p.rel.endCause}</td>
+          <td>{formatDate4Form(r.beginDate)} - {formatDate4Form(r.endDate)}</td>
+          <td>{r.endCause}</td>
           <td style={{textAlign: "right"}}>
-            <EditSpouse person={person} spouse={p} />
-            <UnlinkSpouse person={person} spouse={p} />
+            <EditMarriage person={person} marriage={r} />
+            <UnlinkSpouse person={person} marriage={r} />
           </td>
         </tr>
       ))}
@@ -64,24 +64,23 @@ export function Spouses({person, spouses}: {person: Person, spouses: Person[]}) 
   );
 }
 
-export function Children({person, data}: {person: Person, data: Person[]}) {
-  //const [children, setChildren] = useState(children);
+export function Children({person, records}: {person: Person, records: Parentage[]}) {
   return (
     <Table>
       <caption style={{fontWeight: "bold", textAlign: "left"}}>
         Children
       </caption>
       <tbody>
-      {data?.map((child) => (
-        <tr key={child.id}>
+      {records?.map((rel) => (
+        <tr key={rel.id}>
           <td>
-            <Link href={`/people/${child.id}`}>
-              {child.firstName}
+            <Link href={`/people/${rel.child.id}`}>
+              {rel.child.firstName}
             </Link>
           </td>
-          <td colSpan={2}>{formatDate4Form(child.birthDate)} - {formatDate4Form(child.deathDate)}</td>
+          <td colSpan={2}>{formatDate4Form(rel.child.birthDate)} - {formatDate4Form(rel.child.deathDate)}</td>
           <td style={{textAlign: "right"}}>
-            <UnlinkChild parent={person} child={child} />
+            <UnlinkChild parentage={rel} />
           </td>
         </tr>
       ))}
@@ -100,22 +99,21 @@ export function Children({person, data}: {person: Person, data: Person[]}) {
   );
 }
 
-export function Parents({person, parents}: {person: Person, parents: Person[]}) {
-  //const [parents, setParents] = useState(parents);
+export function Parents({person, records}: {person: Person, records: Parentage[]}) {
   return (
     <Table>
       <caption style={{fontWeight: "bold", textAlign: "left"}}>
         Parents
       </caption>
       <tbody>
-      {parents?.map((p) => (
-        <tr key={p.id}>
+      {records?.map((rel) => (
+        <tr key={rel.id}>
           <td>
-            <Link href={`/people/${p.id}`}>
-              {p.firstName}
+            <Link href={`/people/${rel.parent.id}`}>
+              {rel.parent.firstName}
             </Link>
           </td>
-          <td colSpan={3}>{formatDate4Form(p.birthDate)} - {formatDate4Form(p.deathDate)}</td>
+          <td colSpan={3}>{formatDate4Form(rel.parent.birthDate)} - {formatDate4Form(rel.parent.deathDate)}</td>
         </tr>
       ))}
       </tbody>
@@ -124,7 +122,6 @@ export function Parents({person, parents}: {person: Person, parents: Person[]}) 
 }
 
 export function Siblings({person, siblings}: {person: Person, siblings: Person[]}) {
-  //const [siblings, setSiblings] = useState(siblings);
   return (
     <Table>
       <caption style={{fontWeight: "bold", textAlign: "left"}}>

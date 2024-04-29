@@ -263,41 +263,41 @@ CREATE (lady_sarah:Person:Woman {
 
 // Relationships
 
-CREATE (king_george)-[:MARRIED_TO { beginDate: date("1923-04-26"), endDate: date("1952-02-06"), endCause: "HisDeath" }]->(queen_mother)
+CREATE (king_george)-[:IS_MARRIED_TO { beginDate: date("1923-04-26"), endDate: date("1952-02-06"), endCause: "HisDeath" }]->(queen_mother)
 CREATE (king_george)<-[:IS_CHILD_OF]-(queen_elizabeth)-[:IS_CHILD_OF]->(queen_mother)
 CREATE (king_george)<-[:IS_CHILD_OF]-(princess_margaret)-[:IS_CHILD_OF]->(queen_mother)
 
-CREATE (queen_elizabeth)-[:MARRIED_TO { beginDate: date("1947-11-20"), endDate: date("2021-04-09"), endCause: "HisDeath" }]->(prince_philip)
+CREATE (queen_elizabeth)-[:IS_MARRIED_TO { beginDate: date("1947-11-20"), endDate: date("2021-04-09"), endCause: "HisDeath" }]->(prince_philip)
 FOREACH ( p IN [king_charles, princess_anne, prince_andrew, prince_edward] |
   CREATE (queen_elizabeth)<-[:IS_CHILD_OF]-(p)-[:IS_CHILD_OF]->(prince_philip)
 )
 
-CREATE (princess_margaret)-[:MARRIED_TO { beginDate: date("1960-05-06"), endDate: date("1978-07-11"), endCause: "Divorce" }]->(earl_antony)
+CREATE (princess_margaret)-[:IS_MARRIED_TO { beginDate: date("1960-05-06"), endDate: date("1978-07-11"), endCause: "Divorce" }]->(earl_antony)
 CREATE (princess_margaret)<-[:IS_CHILD_OF]-(earl_david)-[:IS_CHILD_OF]->(earl_antony)
 CREATE (princess_margaret)<-[:IS_CHILD_OF]-(lady_sarah)-[:IS_CHILD_OF]->(earl_antony)
 
-CREATE (king_charles)-[:MARRIED_TO { beginDate: date("1981-07-29"), endDate: date("1996-08-28"), endCause: "Divorce" }]->(princess_diana)
+CREATE (king_charles)-[:IS_MARRIED_TO { beginDate: date("1981-07-29"), endDate: date("1996-08-28"), endCause: "Divorce" }]->(princess_diana)
 CREATE (king_charles)<-[:IS_CHILD_OF]-(prince_william)-[:IS_CHILD_OF]->(princess_diana)
 CREATE (king_charles)<-[:IS_CHILD_OF]-(prince_harry)-[:IS_CHILD_OF]->(princess_diana)
 
-CREATE (king_charles)-[:MARRIED_TO { beginDate: date("2005-04-09") }]->(queen_camila)
+CREATE (king_charles)-[:IS_MARRIED_TO { beginDate: date("2005-04-09") }]->(queen_camila)
 
-CREATE (princess_anne)-[:MARRIED_TO { beginDate: date("1973-11-14"), endDate: date("1992-04-23"), endCause: "Divorce" }]->(mark_philips)
-CREATE (princess_anne)-[:MARRIED_TO { beginDate: date("1992-12-12") }]->(timothy_laurence)
+CREATE (princess_anne)-[:IS_MARRIED_TO { beginDate: date("1973-11-14"), endDate: date("1992-04-23"), endCause: "Divorce" }]->(mark_philips)
+CREATE (princess_anne)-[:IS_MARRIED_TO { beginDate: date("1992-12-12") }]->(timothy_laurence)
 
-CREATE (prince_andrew)-[:MARRIED_TO { beginDate: date("1986-07-23"), endDate: date("1996-05-30"), endCause: "Divorce" }]->(duchess_sarah)
+CREATE (prince_andrew)-[:IS_MARRIED_TO { beginDate: date("1986-07-23"), endDate: date("1996-05-30"), endCause: "Divorce" }]->(duchess_sarah)
 CREATE (prince_andrew)<-[:IS_CHILD_OF]-(princess_beatrice)-[:IS_CHILD_OF]->(duchess_sarah)
 CREATE (prince_andrew)<-[:IS_CHILD_OF]-(princess_eugenie)-[:IS_CHILD_OF]->(duchess_sarah)
 
-CREATE (prince_edward)-[:MARRIED_TO { beginDate: date("1999-06-19") }]->(duchess_sophie)
+CREATE (prince_edward)-[:IS_MARRIED_TO { beginDate: date("1999-06-19") }]->(duchess_sophie)
 CREATE (prince_edward)<-[:IS_CHILD_OF]-(lady_louise)-[:IS_CHILD_OF]->(duchess_sophie)
 CREATE (prince_edward)<-[:IS_CHILD_OF]-(prince_james)-[:IS_CHILD_OF]->(duchess_sophie)
 
-CREATE (prince_william)-[:MARRIED_TO { beginDate: date("2011-04-29") }]->(princess_catherine)
+CREATE (prince_william)-[:IS_MARRIED_TO { beginDate: date("2011-04-29") }]->(princess_catherine)
 FOREACH ( p IN [prince_george, princess_charlotte, prince_louis] |
   CREATE (prince_william)<-[:IS_CHILD_OF]-(p)-[:IS_CHILD_OF]->(princess_catherine)
 )
 
-CREATE (prince_harry)-[:MARRIED_TO { beginDate: date("2018-05-19") }]->(duchess_meghan)
+CREATE (prince_harry)-[:IS_MARRIED_TO { beginDate: date("2018-05-19") }]->(duchess_meghan)
 CREATE (prince_harry)<-[:IS_CHILD_OF]-(prince_archie)-[:IS_CHILD_OF]->(duchess_meghan)
 CREATE (prince_harry)<-[:IS_CHILD_OF]-(princess_lilibet)-[:IS_CHILD_OF]->(duchess_meghan)

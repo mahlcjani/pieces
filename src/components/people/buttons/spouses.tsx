@@ -1,13 +1,13 @@
 "use client"
 
 import { AddPersonForm } from "../addPerson";
-import { type Person } from "@/lib/data.d";
+import { Marriage, type Person } from "@/lib/data.d";
 import {
-  createSpouseRel,
+  createMarriage,
   createPerson,
   deleteRel,
   suggestSpouses,
-  updateSpouseRel,
+  updateMarriage,
 } from "@/lib/data";
 import { formatDate4Form } from "@/lib/utils";
 
@@ -48,7 +48,7 @@ export function AddSpouse({person}: {person: Person}) {
       if (spouse) {
         alert(`Person (${spouse.name}) record saved.`);
 
-        await createSpouseRel(person.id, spouse.id, new FormData());
+        await createMarriage(person.id, spouse.id, new FormData());
         alert(`${person.firstName} and ${spouse.firstName} are family.`);
 
         router.refresh();
@@ -80,7 +80,7 @@ export function LinkSpouse({person}: {person: Person}) {
 
   async function linkSpouse(spouse: Person) {
     try {
-      await createSpouseRel(person.id, spouse.id, new FormData());
+      await createMarriage(person.id, spouse.id, new FormData());
       alert(`${person.firstName} and ${spouse.firstName} are family.`);
 
       router.refresh();
@@ -105,13 +105,13 @@ export function LinkSpouse({person}: {person: Person}) {
   );
 }
 
-export function UnlinkSpouse({person, spouse}: {person: Person, spouse: Person}) {
+export function UnlinkSpouse({person, marriage}: {person: Person, marriage: Marriage}) {
   const router = useRouter();
 
   async function unlinkSpouse() {
-    if (confirm(`Delete relation with ${spouse.firstName}?`)) {
+    if (confirm(`Delete marriage of ${marriage.wife.firstName} and ${marriage.husband.firstName}?`)) {
       try {
-        await deleteRel(spouse.rel.id);
+        await deleteRel(marriage.id);
         router.refresh();
       } catch (e: any) {
         console.log(e);
@@ -127,13 +127,13 @@ export function UnlinkSpouse({person, spouse}: {person: Person, spouse: Person})
   )
 }
 
-export function EditSpouse({person, spouse}: {person: Person, spouse: Person}) {
+export function EditMarriage({person, marriage}: {person: Person, marriage: Marriage}) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  async function updateSpouse(formData: FormData) {
+  async function submitForm(formData: FormData) {
     try {
-      await updateSpouseRel(spouse.rel.id, formData);
+      await updateMarriage(marriage.id, formData);
 
       router.refresh();
       setOpen(false);
@@ -158,7 +158,7 @@ export function EditSpouse({person, spouse}: {person: Person, spouse: Person}) {
                   type="date"
                   name="beginDate"
                   required
-                  defaultValue={formatDate4Form(spouse.rel?.beginDate)}
+                  defaultValue={formatDate4Form(marriage?.beginDate)}
                   variant="outlined"
                 />
               </FormControl>
@@ -167,15 +167,14 @@ export function EditSpouse({person, spouse}: {person: Person, spouse: Person}) {
                 <Input
                   type="date"
                   name="endDate"
-                  defaultValue={formatDate4Form(spouse.rel?.endDate)}
+                  defaultValue={formatDate4Form(marriage?.endDate)}
                   variant="outlined"
                 />
               </FormControl>
               <FormControl>
                 <FormLabel htmlFor="endCause">End cause</FormLabel>
-                <Select name="endCause" defaultValue={spouse.rel?.endCause}>
-                  <Option value="HisDeath">His death</Option>
-                  <Option value="HerDeath">Her death</Option>
+                <Select name="endCause" defaultValue={marriage?.endCause}>
+                  <Option value="Death">Death</Option>
                   <Option value="Divorce">Divorce</Option>
                 </Select>
               </FormControl>
@@ -183,7 +182,7 @@ export function EditSpouse({person, spouse}: {person: Person, spouse: Person}) {
               <Divider />
 
               <ButtonGroup>
-                <Button type="submit" formAction={updateSpouse}>
+                <Button type="submit" formAction={submitForm}>
                   Update
                 </Button>
               </ButtonGroup>

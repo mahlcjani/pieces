@@ -13,29 +13,36 @@ export async function GET(request: Request) {
   const limit: number = Number(searchParams.get("limit")) || 10;
 
   const people: Person[] = await fetchPeople(query, offset, limit);
-  return Response.json(people);
+  return Response.json(people.map((person) => {
+    return {
+      ...person,
+      birthDate: person.birthDate?.toISOString().substring(0, 10),
+      deathDate: person.deathDate?.toISOString().substring(0, 10),
+      nameDate: person.nameDate?.toISOString().substring(0, 10),
+    }
+  }));
 }
 
 /*
 curl \
-  --request PUT \
+  --request POST \
   --header "Content-Type: application/json" \
   --data '{"name": "Maciej Misiołek", "birthDate": "1971-11-18"}'
 
 curl \
-  --request PUT \
+  --request POST \
   --header "Content-type: application/x-www-form-urlencoded" (also implied by curl)
   --data 'name=Maciej Misiołek' \
   --data 'birthDate=1971-11-18'
 
 curl \
-  --request PUT \
+  --request POST \
   --header "Content-Type: multipart/form-data" \ (also implied by curl)
   --form 'name=Maciej Misiołek' \
   --form 'birthDate=1971-11-18'
 
 */
-export async function PUT(request: Request) {
+export async function POST(request: Request) {
 
   const headersList = headers();
   const contentType = headersList.get("Content-type");
@@ -56,7 +63,15 @@ export async function PUT(request: Request) {
   if (sex) {
     formData.delete("sex");
     try {
-      return Response.json(await createPerson(sex, formData))
+      const record = await createPerson(sex, formData);
+      console.log(record);
+
+      return Response.json({
+        ...record,
+        birthDate: record?.birthDate?.toISOString().substring(0, 10),
+        deathDate: record?.deathDate?.toISOString().substring(0, 10),
+        nameDate: record?.nameDate?.toISOString().substring(0, 10),
+      });
     } catch (e: any) {
       return Response.json({error: e.message}, {status: 400, statusText: "Bad request"});
     }

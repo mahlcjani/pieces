@@ -1,10 +1,10 @@
-// names comma delimited list?
-// search would work
 
-// TODO convert to interface
+export type Sex = "Man" | "Woman";
+
+// TODO (?): convert to interface
 export type Person = {
   id: string;
-  sex: "Man" | "Woman";
+  sex: Sex;
   name: string;
   names?: string[];
   firstName: string;
@@ -16,38 +16,31 @@ export type Person = {
   birthDate: Date;
   deathDate?: Date;
   nameDate?: Date;
-  // To support spouses until something better comes to my mind
-  rel?: any;
-}
-/*
-export type Relative = {
-
 }
 
-Parent == Person
-
-Spouse
-marryBeginDate
-marryEndDate;
-marryEndCause;
-
-Relative is Child
-
-
-interface Human {
-
+/**
+ * parent or child properties can be undefined because records can be returned in context of
+ * concrete persons. For instance if asking for children of person A parent property may be left unset.
+ */
+export type Parentage = {
+  id: string;
+  parent: Person;
+  child: Person;
 }
 
-interface RelatedHuman extends Human {
-  relation: "child" | "parent" | "sibling" | "spouse"; // friend,
-  beginDate: Date | undefined;
-  endDate: Date | undefined;
-  endReason: "SpouseDeath" | undefined;
+/**
+ * spouses can be single Person meaning the other spouse when quering for spouses of
+ * specific person.
+ */
+export type Marriage = {
+  id: string;
+  beginDate: Date;
+  endDate?: Date;
+  // Don't care whos death
+  endCause?: "Death" | "Divorce";
+  wife: Person;
+  husband: Person;
 }
-export type Relation = {
-  type: "child" | "parent" | "sibling" | "spouse";
-}
-*/
 
 export type Anniversary = {
   date: Date;
@@ -56,4 +49,3 @@ export type Anniversary = {
   title?: string;
   people: Person[];
 };
-

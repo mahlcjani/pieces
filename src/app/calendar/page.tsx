@@ -60,7 +60,7 @@ import {
 
 import Image from "next/image";
 
-export default function Page() {
+export default function Calendar() {
 
   async function getEvents({start, end}: EventSourceFuncArg): Promise<EventInput[]> {
     const anniversaries = await fetchEvents(start, end);

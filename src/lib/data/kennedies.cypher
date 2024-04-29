@@ -286,7 +286,7 @@ CREATE (ms:Person:Woman {
     birthDate: date("????-??-??"),
 })
 
-CREATE (rss3)-[:MARRIED_TO { beginDate: date("2005-05-07") }]->(ms)
+CREATE (rss3)-[:IS_MARRIED_TO { beginDate: date("2005-05-07") }]->(ms)
 */
 
 CREATE (mos:Person:Woman {
@@ -544,11 +544,13 @@ CREATE (vak:Person:Woman {
 
 // Relationships
 
-CREATE (pjk)-[:MARRIED_TO { beginDate: date("1887-11-23"), endDate: date("1923-05-06"), endCause: "HerDeath" }]->(mak)
+CREATE (pjk)-[:IS_MARRIED_TO { beginDate: date("1887-11-23"), endDate: date("1923-05-06"), endCause: "Death" }]->(mak)
 CREATE (pjk)<-[:IS_CHILD_OF]-(jpk)-[:IS_CHILD_OF]->(mak)
 CREATE (pjk)<-[:IS_CHILD_OF]-(fbk)-[:IS_CHILD_OF]->(mak)
+CREATE (pjk)<-[:IS_CHILD_OF]-(mlc)-[:IS_CHILD_OF]->(mak)
+CREATE (pjk)<-[:IS_CHILD_OF]-(mlb)-[:IS_CHILD_OF]->(mak)
 
-CREATE (jpk)-[:MARRIED_TO { beginDate: date("1914-10-07"), endDate: date("1969-11-18"), endCause: "HisDeath" }]->(rek)
+CREATE (jpk)-[:IS_MARRIED_TO { beginDate: date("1914-10-07"), endDate: date("1969-11-18"), endCause: "Death" }]->(rek)
 CREATE (jpk)<-[:IS_CHILD_OF]-(jpk2)-[:IS_CHILD_OF]->(rek)
 CREATE (jpk)<-[:IS_CHILD_OF]-(jfk)-[:IS_CHILD_OF]->(rek)
 CREATE (jpk)<-[:IS_CHILD_OF]-(rmk)-[:IS_CHILD_OF]->(rek)
@@ -559,32 +561,32 @@ CREATE (jpk)<-[:IS_CHILD_OF]-(rfk)-[:IS_CHILD_OF]->(rek)
 CREATE (jpk)<-[:IS_CHILD_OF]-(jas)-[:IS_CHILD_OF]->(rek)
 CREATE (jpk)<-[:IS_CHILD_OF]-(emk)-[:IS_CHILD_OF]->(rek)
 
-CREATE (mlc)-[:MARRIED_TO { beginDate: date("1927-10-12"), endDate: date("1971-08-29"), endCause: "HisDeath" }]->(gwc)
+CREATE (mlc)-[:IS_MARRIED_TO { beginDate: date("1927-10-12"), endDate: date("1971-08-29"), endCause: "Death" }]->(gwc)
 CREATE (mlc)<-[:IS_CHILD_OF]-(mlm)-[:IS_CHILD_OF]->(gwc)
 
-CREATE (mlb)-[:MARRIED_TO { beginDate: date("1924-06-14"), endDate: date("1967-04-05"), endCause: "HisDeath" }]->(cjb)
+CREATE (mlb)-[:IS_MARRIED_TO { beginDate: date("1924-06-14"), endDate: date("1967-04-05"), endCause: "Death" }]->(cjb)
 CREATE (mlb)<-[:IS_CHILD_OF]-(mldv)-[:IS_CHILD_OF]->(cjb)
 CREATE (mlb)<-[:IS_CHILD_OF]-(cjb2)-[:IS_CHILD_OF]->(cjb)
 CREATE (mlb)<-[:IS_CHILD_OF]-(tfb)-[:IS_CHILD_OF]->(cjb)
 
-CREATE (jfk)-[:MARRIED_TO { beginDate: date("1953-09-12"), endDate: date("1963-11-22"), endCause: "HisDeath" }]->(jko)
+CREATE (jfk)-[:IS_MARRIED_TO { beginDate: date("1953-09-12"), endDate: date("1963-11-22"), endCause: "Death" }]->(jko)
 CREATE (jfk)<-[:IS_CHILD_OF]-(ak)-[:IS_CHILD_OF]->(jko)
 CREATE (jfk)<-[:IS_CHILD_OF]-(cbk)-[:IS_CHILD_OF]->(jko)
 CREATE (jfk)<-[:IS_CHILD_OF]-(jfk2)-[:IS_CHILD_OF]->(jko)
 CREATE (jfk)<-[:IS_CHILD_OF]-(pbk)-[:IS_CHILD_OF]->(jko)
 
-CREATE (kac)-[:MARRIED_TO { beginDate: date("1944-05-06"), endDate: date("1944-09-09"), endCause: "HisDeath" }]->(wjrc)
+CREATE (kac)-[:IS_MARRIED_TO { beginDate: date("1944-05-06"), endDate: date("1944-09-09"), endCause: "Death" }]->(wjrc)
 
-CREATE (ems)-[:MARRIED_TO { beginDate: date("1953-05-23"), endDate: date("2009-08-11"), endCause: "HerDeath" }]->(rss2)
+CREATE (ems)-[:IS_MARRIED_TO { beginDate: date("1953-05-23"), endDate: date("2009-08-11"), endCause: "Death" }]->(rss2)
 CREATE (ems)<-[:IS_CHILD_OF]-(rss3)-[:IS_CHILD_OF]->(rss2)
 CREATE (ems)<-[:IS_CHILD_OF]-(mos)-[:IS_CHILD_OF]->(rss2)
 CREATE (ems)<-[:IS_CHILD_OF]-(tps)-[:IS_CHILD_OF]->(rss2)
 CREATE (ems)<-[:IS_CHILD_OF]-(mks)-[:IS_CHILD_OF]->(rss2)
 CREATE (ems)<-[:IS_CHILD_OF]-(apks)-[:IS_CHILD_OF]->(rss2)
 
-CREATE (phl)-[:MARRIED_TO { beginDate: date("1954-04-24"), endDate: date("1966-02-01"), endCause: "Divorce" }]->(psel)
+CREATE (phl)-[:IS_MARRIED_TO { beginDate: date("1954-04-24"), endDate: date("1966-02-01"), endCause: "Divorce" }]->(psel)
 
-CREATE (rfk)-[:MARRIED_TO { beginDate: date("1950-06-17"), endDate: date("1968-06-06"), endCause: "HisDeath" }]->(ek)
+CREATE (rfk)-[:IS_MARRIED_TO { beginDate: date("1950-06-17"), endDate: date("1968-06-06"), endCause: "Death" }]->(ek)
 CREATE (rfk)<-[:IS_CHILD_OF]-(kht)-[:IS_CHILD_OF]->(ek)
 CREATE (rfk)<-[:IS_CHILD_OF]-(jpkii)-[:IS_CHILD_OF]->(ek)
 CREATE (rfk)<-[:IS_CHILD_OF]-(rfk2)-[:IS_CHILD_OF]->(ek)
@@ -597,20 +599,20 @@ CREATE (rfk)<-[:IS_CHILD_OF]-(mmtk)-[:IS_CHILD_OF]->(ek)
 CREATE (rfk)<-[:IS_CHILD_OF]-(dhk)-[:IS_CHILD_OF]->(ek)
 CREATE (rfk)<-[:IS_CHILD_OF]-(rekk)-[:IS_CHILD_OF]->(ek)
 
-CREATE (jas)-[:MARRIED_TO { beginDate: date("1956-05-19"), endDate: date("1990-08-19"), endCause: "HisDeath" }]->(ses)
+CREATE (jas)-[:IS_MARRIED_TO { beginDate: date("1956-05-19"), endDate: date("1990-08-19"), endCause: "Death" }]->(ses)
 
-CREATE (emk)-[:MARRIED_TO { beginDate: date("1958-11-29"), endDate: date("1983-08-19"), endCause: "Divorce" }]->(vjk)
+CREATE (emk)-[:IS_MARRIED_TO { beginDate: date("1958-11-29"), endDate: date("1983-08-19"), endCause: "Divorce" }]->(vjk)
 CREATE (emk)<-[:IS_CHILD_OF]-(kak)-[:IS_CHILD_OF]->(vjk)
 CREATE (emk)<-[:IS_CHILD_OF]-(emk2)-[:IS_CHILD_OF]->(vjk)
 CREATE (emk)<-[:IS_CHILD_OF]-(pjkii)-[:IS_CHILD_OF]->(vjk)
 
-CREATE (emk)-[:MARRIED_TO { beginDate: date("1992-07-03"), endDate: date("2009-08-25"), endCause: "HisDeath" }]->(vak)
+CREATE (emk)-[:IS_MARRIED_TO { beginDate: date("1992-07-03"), endDate: date("2009-08-25"), endCause: "Death" }]->(vak)
 
-CREATE (cbk)-[:MARRIED_TO { beginDate: date("1986-07-19") }]->(eas)
+CREATE (cbk)-[:IS_MARRIED_TO { beginDate: date("1986-07-19") }]->(eas)
 CREATE (cbk)<-[:IS_CHILD_OF]-(rs)-[:IS_CHILD_OF]->(eas)
 CREATE (cbk)<-[:IS_CHILD_OF]-(ts)-[:IS_CHILD_OF]->(eas)
 CREATE (cbk)<-[:IS_CHILD_OF]-(js)-[:IS_CHILD_OF]->(eas)
 
-CREATE (jfk2)-[:MARRIED_TO { beginDate: date("1996-09-21"), endDate: date("1999-07-16"), endCause: "Death" }]->(cjbk)
+CREATE (jfk2)-[:IS_MARRIED_TO { beginDate: date("1996-09-21"), endDate: date("1999-07-16"), endCause: "Death" }]->(cjbk)
 
-CREATE (mos)-[:MARRIED_TO { beginDate: date("1986-04-26"), endDate: date("2011-05-09"), endCause: "Divorce" }]->(aas)
+CREATE (mos)-[:IS_MARRIED_TO { beginDate: date("1986-04-26"), endDate: date("2011-05-09"), endCause: "Divorce" }]->(aas)

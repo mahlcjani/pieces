@@ -15,7 +15,7 @@ CREATE (night:Person:Woman {
     nameDate: date("1900-05-26")
 })
 
-CREATE (day)-[:MARRIED_TO { beginDate: date("1900-01-01") }]->(night)
+CREATE (day)-[:IS_MARRIED_TO { beginDate: date("1900-01-01") }]->(night)
 
 CREATE (monday:Person:Man {
     name: "Monday",
@@ -53,7 +53,7 @@ CREATE (małgorzata:Person:Woman {
     birthDate: date("1983-07-04")
 })
 
-CREATE (maciej)-[:MARRIED_TO {beginDate: date("2020-02-22")}]->(małgorzata)
+CREATE (maciej)-[:IS_MARRIED_TO {beginDate: date("2020-02-22")}]->(małgorzata)
 
 CREATE (maja:Person:Woman {
     name: "Maja Misiołek",
@@ -115,7 +115,7 @@ CREATE (robert:Person:Man {
     birthDate: date("1966-11-13")
 })
 
-CREATE (marta)-[:MARRIED_TO {beginDate: date("1991-09-14")}]->(robert)
+CREATE (marta)-[:IS_MARRIED_TO {beginDate: date("1991-09-14")}]->(robert)
 
 CREATE (bartłomiej:Person:Man {
     name: "Bartłomiej Malara",
@@ -150,7 +150,7 @@ CREATE (bartłomiej)-[:PARTNER_OF {
     endCause: 'TheirMarriage'
 }]->(katarzyna)
 
-CREATE (bartłomiej)-[:MARRIED_TO {beginDate: date("2021-11-20")}]->(katarzyna)
+CREATE (bartłomiej)-[:IS_MARRIED_TO {beginDate: date("2021-11-20")}]->(katarzyna)
 
 CREATE (hubert:Person:Man {
     name: "Hubert ???",
@@ -181,7 +181,7 @@ CREATE (justyna:Person:Woman {
     birthDate: date("1983-01-07")
 })
 
-CREATE (tomasz)-[:MARRIED_TO {beginDate: date("2012-06-23")}]->(justyna)
+CREATE (tomasz)-[:IS_MARRIED_TO {beginDate: date("2012-06-23")}]->(justyna)
 
 // Magdalena's branch
 
@@ -203,7 +203,7 @@ CREATE (grzegorz:Person:Man {
     birthDate: date("1975-02-18")
 })
 
-CREATE (magdalena)-[:MARRIED_TO {beginDate: date("2005-06-24")}]->(grzegorz)
+CREATE (magdalena)-[:IS_MARRIED_TO {beginDate: date("2005-06-24")}]->(grzegorz)
 
 CREATE (weronika:Person:Woman {
     name: "Weronika Sypień",
@@ -245,7 +245,7 @@ CREATE (agnieszka:Person:Woman {
     birthDate: date("1984-01-20")
 })
 
-CREATE (jerzy)-[:MARRIED_TO {beginDate: date("2009-05-23")}]->(agnieszka)
+CREATE (jerzy)-[:IS_MARRIED_TO {beginDate: date("2009-05-23")}]->(agnieszka)
 
 CREATE (gabriela:Person:Woman {
     name: "Gabriela Misiołek",
@@ -271,10 +271,10 @@ CREATE (anna)-[:IS_CHILD_OF]->(agnieszka)
 RETURN *
 
 // To find active relationships
-MATCH (m:Man)-[r:MARRIED_TO|PARTNER_OF where r.endDate is null]-(w:Woman)
+MATCH (m:Man)-[r:IS_MARRIED_TO|PARTNER_OF where r.endDate is null]-(w:Woman)
 RETURN m.name, w.name
 
-MATCH (w:Woman)-[m:MARRIED_TO]-(p)
+MATCH (w:Woman)-[m:IS_MARRIED_TO]-(p)
 RETURN 'marriage' AS kind,
   w.firstName AS name1,
   p.firstName AS name2,

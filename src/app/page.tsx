@@ -5,7 +5,7 @@ import {
   Button
 } from "@mui/joy";
 
-export default function Page() {
+export default function Home() {
   return (
     <>
       <Card variant="outlined">

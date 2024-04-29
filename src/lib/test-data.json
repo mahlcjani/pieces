@@ -6,16 +6,17 @@
     "firstName": "Zeus",
     "surname": "Olimpian",
     "birthDate": "1970-01-01",
-    "spouses": [
+    "marriages": [
       {
-        "id": "hera",
-        "sex": "Woman",
-        "name": "Hera",
-        "firstName": "Hera",
-        "surname": "Olimpian",
-        "birthDate": "1970-01-01",
-        "rel": {
-          "beginDate": "1970-01-01"
+        "id": "zeus-hera",
+        "beginDate": "1970-01-01",
+        "spouses": {
+          "id": "hera",
+          "sex": "Woman",
+          "name": "Hera",
+          "firstName": "Hera",
+          "surname": "Olimpian",
+          "birthDate": "1970-01-01"
         }
       }
     ],

@@ -1,89 +1,92 @@
 "use server"
 
-import neo4j, {
-  Date as Neo4jDate,
-  Driver,
-  RecordShape,
-  QueryResult,
-  Session,
-  Transaction,
-  ManagedTransaction
-} from "neo4j-driver"
+import type {
+  Marriage,
+  Parentage,
+  Person,
+  Sex
+} from "@/lib/data.d"
 
-import { type Anniversary, type Person } from "@/lib/data.d"
+import {
+  type Node,
+  type Relationship,
+  getSession,
+  parseNode,
+  neo4j,
+  type RecordShape,
+  type QueryResult,
+  RelDirection,
+  fetchNodeRelatonships,
+  fetchNodeRelatonship,
+  executeRead
+} from "./neo4j";
+
 import { unstable_noStore as noStore } from "next/cache";
 
-let driver: Driver
-
-async function getDriver(): Promise<Driver> {
-  if (!driver) {
-    driver = neo4j.driver(
-      process.env.NEO4J_URL || "neo4j://localhost:7687",
-      neo4j.auth.basic(
-        process.env.NEO4J_USERNAME || "neo4j",
-        process.env.NEO4J_PASSWORD || "nosecret"
-      )
-    )
-
-    await driver.getServerInfo()
-  }
-
-  return driver
+enum RelType {
+  IS_MARRIED_TO = "IS_MARRIED_TO",
+  IS_CHILD_OF = "IS_CHILD_OF"
 }
 
-async function getSession(): Promise<Session> {
-  return (await getDriver()).session({
-    database: process.env.NEO4J_DATABASE || "neo4j"
-  });
+function makePerson(node: Node): Person {
+  return {
+    id: node.id,
+    sex: node.labels.filter((l: string) => l == "Man" || l == "Woman")[0] as Sex,
+    ...node.properties
+  } as Person;
 }
 
-function safeDate(date: Neo4jDate|undefined, __debug__: string[]) {
-  try {
-    return date?.toStandardDate();
-  } catch (e) {
-    console.log(`${__debug__}: Error for ${date} (${typeof date})`)
-    console.log(e);
-    return null;
-  }
+function makeParentage(rel: Relationship): Parentage {
+  // assert rel.type == RelType.IS_CHILD_OF
+  return {
+    id: rel.id,
+    parent: makePerson(rel.targetNode),
+    child: makePerson(rel.sourceNode),
+  };
+}
+
+function makeMarriage(rel: Relationship): Marriage {
+  // assert rel.type == RelType.IS_MARRIED_TO
+  const source: Person = makePerson(rel.sourceNode);
+  const target: Person = makePerson(rel.targetNode);
+  // assert both wife and husband are set
+  return {
+    id: rel.id,
+    ...rel.properties,
+    wife: source.sex == "Man" ? target : source,
+    husband: source.sex == "Man" ? source : target,
+  } as Marriage;
 }
 
 function parsePersonNode(node: RecordShape): Person {
-  return {
-    id: node.elementId,
-    sex: node.labels.includes("Woman") ? "Woman" : "Man",
-    ...node.properties,
-    birthDate: safeDate(node.properties.birthDate, [node.properties.name, "birthDate"]),
-    nameDate: safeDate(node.properties.nameDate, [node.properties.name, "nameDate"]),
-    deathDate: safeDate(node.properties.deathDate, [node.properties.name, "deathDate"])
-  }
+  return Object.assign(
+    {
+      id: node.elementId,
+      sex: node.labels.filter((l: string) => l == "Man" || l == "Woman")[0]
+    },
+    parseNode(node)
+  ) as Person;
 }
 
-export async function fetchYearEvents(year: number): Promise<Anniversary[]> {
-  return fetchEvents(new Date(year, 1, 1), new Date(year+1, 1, 1));
-}
-
-export async function fetchMonthEvents(year: number, month: number): Promise<Anniversary[]> {
-  // todo deal with december
-  return fetchEvents(new Date(year, month, 1), new Date(year, month+1, 1));
-}
-
-export async function fetchDayEvents(year: number, month: number, day: number): Promise<Anniversary[]> {
-  // to do - deal with end of month
-  return fetchEvents(new Date(year, month, day), new Date(year, month, day+1));
-}
-
+/**
+ * Find events for calendar.
+ *
+ * @param since start date
+ * @param until end date
+ * @returns
+ */
 export async function fetchEvents(since: Date, until: Date) {
   noStore();
 
   const session = await getSession();
 
   try {
-    const result: QueryResult<RecordShape> = await session.executeRead(tx =>
+    const result: QueryResult<RecordShape<string, any>> = await session.executeRead(tx =>
       tx.run(`
         WITH date($start) AS start, date($end) AS end
         UNWIND [days IN range(0, duration.inDays(start, end).days) |
           start + duration({days:days})] AS day
-        MATCH (w:Woman)-[m:MARRIED_TO]-(p)
+        MATCH (w:Woman)-[m:IS_MARRIED_TO]-(p)
         WHERE day > m.beginDate AND m.beginDate.month = day.month AND m.beginDate.day = day.day
         WITH *, {person: w} AS wife, {person: p} AS husband
         RETURN "Marriage" AS eventType,
@@ -141,6 +144,14 @@ export async function fetchEvents(since: Date, until: Date) {
   return [];
 }
 
+/**
+ * Find people matching search criteria.
+ *
+ * @param query
+ * @param offset
+ * @param limit
+ * @returns
+ */
 export async function fetchPeople(query: string, offset: number, limit: number) {
   noStore();
 
@@ -181,6 +192,12 @@ export async function fetchPeople(query: string, offset: number, limit: number) 
   return [];
 }
 
+/**
+ * Count people matching search criteria.
+ *
+ * @param query
+ * @returns
+ */
 export async function countPeople(query: string) {
   noStore();
 
@@ -215,6 +232,12 @@ export async function countPeople(query: string) {
   return 0;
 }
 
+/**
+ * Fetch person properties.
+ *
+ * @param id - person identifier
+ * @returns promise resolving to Person object
+ */
 export async function fetchPerson(id: string): Promise<Person|undefined> {
   noStore();
 
@@ -242,111 +265,49 @@ export async function fetchPerson(id: string): Promise<Person|undefined> {
   return undefined;
 }
 
-export async function fetchChildren(id: string) {
-  noStore();
-
-  const session = await getSession();
-
-  try {
-    const result: QueryResult<RecordShape> = await session.executeRead(tx =>
-      tx.run(`
-        MATCH (child:Person)-[:IS_CHILD_OF]->(person:Person)
-        WHERE elementId(person) = $id
-        RETURN child
-        ORDER BY child.birthDate`,
-        { id: id }
-      )
-    );
-
-    return result.records.map(row => parsePersonNode(row.get("child")/*, row.get("rel")*/));
-  }
-  catch (e) {
-    console.log(e)
-  }
-  finally {
-    await session.close()
-  }
-
-  return [];
+/**
+ * Fetch marriages of a given person.
+ *
+ * @param id - person identifier
+ * @returns promise resolving to an array of Marriage objects.
+ */
+export async function fetchMarriages(personId: string) : Promise<Marriage[]> {
+  return (await fetchNodeRelatonships(personId, RelType.IS_MARRIED_TO, RelDirection.NO)).map(
+    rel => makeMarriage(rel)
+  );
 }
 
-export async function fetchParents(id: string) {
-  noStore();
-
-  const session = await getSession();
-
-  try {
-    const result: QueryResult<RecordShape> = await session.executeRead(tx =>
-      tx.run(`
-        MATCH (person:Person)-[:IS_CHILD_OF]->(parent:Person)
-        WHERE elementId(person) = $id
-        RETURN parent`,
-        {
-          id: id
-        }
-      )
-    );
-
-    return result.records.map(row => parsePersonNode(row.get("parent")));
-  }
-  catch (e) {
-    console.log(e)
-  }
-  finally {
-    await session.close()
-  }
-
-  return [];
+/**
+ * Fetch children of a given person.
+ *
+ * @param id - parent identifier
+ * @returns promise resolving to an array of Parentage objects.
+ */
+export async function fetchChildren(personId: string) : Promise<Parentage[]> {
+  return (await fetchNodeRelatonships(personId, RelType.IS_CHILD_OF, RelDirection.IN)).map(
+    rel => makeParentage(rel)
+  );
 }
 
-export async function fetchSpouses(id: string) {
-  noStore();
-
-  const session = await getSession();
-
-  try {
-    const result: QueryResult<RecordShape> = await session.executeRead(tx =>
-      tx.run(`
-        MATCH (person:Person)-[rel:MARRIED_TO]-(spouse:Person)
-        WHERE elementId(person) = $id
-        RETURN spouse, rel
-        ORDER BY rel.beginDate`,
-        {
-          id: id
-        }
-      )
-    );
-
-    return result.records.map(row => {
-      const spouse = row.get("spouse");
-      const rel = row.get("rel");
-      return {
-        id: spouse.elementId,
-        sex: spouse.labels.includes("Woman") ? "Woman" : "Man",
-        ...spouse.properties,
-        birthDate: spouse.properties.birthDate?.toStandardDate(),
-        nameDate: spouse.properties.nameDate?.toStandardDate(),
-        deathDate: spouse.properties.deathDate?.toStandardDate(),
-        rel: {
-          id: rel.elementId,
-          beginDate: rel.properties.beginDate?.toStandardDate(),
-          endDate: rel.properties.endDate?.toStandardDate(),
-          endCause: rel.properties.endCause
-        }
-      }
-    });
-  }
-  catch (e) {
-    console.log(e)
-  }
-  finally {
-    await session.close()
-  }
-
-  return [];
+/**
+ * Fetch parents of a given person.
+ *
+ * @param id - child identifier
+ * @returns promise resolving to an array of Parentage objects.
+ */
+export async function fetchParents(personId: string) : Promise<Parentage[]> {
+  return (await fetchNodeRelatonships(personId, RelType.IS_CHILD_OF, RelDirection.OUT)).map(
+    rel => makeParentage(rel)
+  );
 }
 
-export async function fetchSiblings(id: string) {
+/**
+ * Fetch siblings of a given person.
+ *
+ * @param id - person identifier
+ * @returns promise resolving to an array of Person objects.
+ */
+export async function fetchSiblings(id: string): Promise<Person[]> {
   noStore();
 
   const session = await getSession();
@@ -376,9 +337,37 @@ export async function fetchSiblings(id: string) {
   return [];
 }
 
+/**
+ * Fetch marriage of a given id.
+ *
+ * @param id - marriage identifier
+ * @returns promise resolving to a Marriage object.
+ */
+export async function fetchMarriage(id: string) : Promise<Marriage> {
+  const rel = await fetchNodeRelatonship(id);
+  if (rel === undefined) {
+    throw new Error("Marriage of a specified id is not existing!");
+  }
+  return makeMarriage(rel);
+}
+
+/**
+ * Fetch parentage of a given id.
+ *
+ * @param id - parentage relationship identifier
+ * @returns promise resolving to a Parentage object.
+ */
+export async function fetchParentage(id: string) : Promise<Parentage> {
+  const rel = await fetchNodeRelatonship(id);
+  if (rel === undefined) {
+    throw new Error("Parentage (parent-child relation) of a specified id is not existing!");
+  }
+  return makeParentage(rel);
+}
+
 function toPersonObject(formData: FormData): any {
   return toObject(formData, [
-    "name", "firstName", "surname", "birthDate", "deathDate", "nameDate"
+    "name", "firstName", "middleNames", "surname", "birthName", "birthDate", "deathDate", "nameDate"
   ]);
 }
 
@@ -512,17 +501,13 @@ export async function deletePerson(id: string) {
   }
 }
 
-// [: string]: any
-
-export async function createChildRel(parent: string, child: string) {
-  const rel: RecordShape = createRel(child, parent, "IS_CHILD_OF", {});
-  console.log(rel);
+export async function createParentage(parent: string, child: string) {
+  const rel: RecordShape = createRel(child, parent, RelType.IS_CHILD_OF, {});
   return { id: rel.elementId };
 }
 
-export async function createSpouseRel(person: string, spouse: string, formData: FormData) {
-  const rel: RecordShape = createRel(person, spouse, "MARRIED_TO", formData ? toMarriageObject(formData) : {});
-  console.log(rel);
+export async function createMarriage(person: string, spouse: string, formData: FormData) {
+  const rel: RecordShape = createRel(person, spouse, RelType.IS_MARRIED_TO, formData ? toMarriageObject(formData) : {});
   return {
     id: rel.elementId,
     beginDate: rel.properties?.beginDate?.toStandardDate(),
@@ -531,7 +516,7 @@ export async function createSpouseRel(person: string, spouse: string, formData: 
   }
 }
 
-async function createRel(p1: string, p2: string, rel: "IS_CHILD_OF"|"MARRIED_TO", properties: any): Promise<RecordShape> {
+async function createRel(p1: string, p2: string, rel: RelType, properties: any): Promise<RecordShape> {
   noStore();
 
   console.log(`About to create relation ${rel} with properties`);
@@ -582,9 +567,13 @@ async function createRel(p1: string, p2: string, rel: "IS_CHILD_OF"|"MARRIED_TO"
   }
 }
 
-export async function updateSpouseRel(id: string, formData: FormData) {
+export async function updateMarriage(id: string, formData: FormData) {
   const rel: RecordShape = updateRel(id, formData ? toMarriageObject(formData) : {});
   console.log(rel);
+
+  //return makeMarriage(rel);
+
+
   return {
     id: rel.elementId,
     beginDate: rel.properties?.beginDate?.toStandardDate(),
@@ -593,6 +582,7 @@ export async function updateSpouseRel(id: string, formData: FormData) {
   }
 }
 
+// TODO: load persons
 export async function updateRel(id: string, properties: any): Promise<RecordShape> {
   noStore();
 
@@ -600,7 +590,7 @@ export async function updateRel(id: string, properties: any): Promise<RecordShap
   console.log(properties);
 
   function cypher(node: string, key: string, value: string|object) {
-    return typeof value !== "undefined"
+    return value !== undefined
       ? value ? key.endsWith("Date") ? `${node}.${key}=date(\$${key}),`
                                      : `${node}.${key}=\$${key},`
               : `${node}.${key}=null,`
@@ -642,10 +632,34 @@ export async function deleteRel(id: string) {
 
   try {
     const result: QueryResult<RecordShape> = await session.executeWrite(tx =>
-      tx.run("MATCH ()-[rel]->() WHERE elementId(rel) = $id DELETE rel", {id: id})
+      tx.run(`
+        MATCH (source)-[rel]->(target)
+        WHERE elementId(rel) = $id
+        DELETE rel
+        RETURN source, rel, target`,
+        {id: id})
     );
 
-    console.log(result);
+    return result.records.map(row => {
+      const rel = row.get("rel");
+      const source = row.get("source");
+      const target = row.get("target");
+      return {
+        id: rel.elementId,
+        type: rel.type,
+        properties: parseNode(rel.properties),
+        sourceNode: {
+          id: source.elementId,
+          labels: source.labels,
+          properties: parseNode(source.properties)
+        },
+        targetNode: {
+          id: target.elementId,
+          labels: target.labels,
+          properties: parseNode(target.properties)
+        }
+      }
+    }).at(0);
   }
   catch (e) {
     console.log(e);
@@ -656,11 +670,11 @@ export async function deleteRel(id: string) {
   }
 }
 
-export async function deleteChildRel(parent: string, child: string) {
+export async function deleteParentage(parent: string, child: string) {
   deleteRel_(child, parent, "IS_CHILD_OF");
 }
 
-export async function deleteSpouseRel(person: string, spouse: string) {
+export async function deleteMarriage(person: string, spouse: string) {
   deleteRel_(person, spouse, "MARRIED_TO");
 }
 
@@ -707,7 +721,7 @@ export async function suggestSpouses(query: string, personId: string, spouseSex:
     const result: QueryResult<RecordShape> = await session.executeRead(tx =>
       tx.run(`
         MATCH (person:Person:${spouseSex})
-        WHERE not ((person)-[:MARRIED_TO]-())
+        WHERE not ((person)-[:IS_MARRIED_TO]-())
          AND (person.name =~ $query OR person.firstName =~ $query OR person.surname =~ $query)
          AND elementId(person) <> $id
          AND date($bornBefore) > person.birthDate >= date($bornAfter)
@@ -789,7 +803,6 @@ export async function suggestChildren(query: string, parentId: string, parentSex
   return [];
 }
 
-
 export async function suggestChildren_(parentId: string, parentSex: string, bornAfter: Date, bornBefore: Date, query: string) {
   const result: any = executeRead(tx =>
     tx.run(`
@@ -814,41 +827,4 @@ export async function suggestChildren_(parentId: string, parentSex: string, born
   );
 
   return result.records.map((row: RecordShape) => parsePersonNode(row.get("person")));
-}
-
-// Generic interface
-type TransactionWork<T> = (tx: Transaction) => Promise<T> | T;
-type ManagedTransactionWork<T> = (tx: ManagedTransaction) => Promise<T> | T;
-
-async function executeRead(work: ManagedTransactionWork<QueryResult<RecordShape>>): Promise<QueryResult<RecordShape>|undefined> {
-  noStore();
-
-  const session = await getSession();
-
-  try {
-    const result: QueryResult<RecordShape> = await session.executeRead(work);
-    console.log(result);
-    return result;
-  }
-  catch (e) {
-    console.log(e)
-  }
-  finally {
-    await session.close()
-  }
-  return undefined;
-}
-
-type Node = {
-  labels: string[];
-  properties: object;
-}
-
-function createNode1(node: Node): object|undefined {
-  const { labels, properties } = node;
-  return createNode2(properties, labels);
-}
-
-function createNode2(node: object, labels: string[]): object|undefined {
-  return undefined;
 }

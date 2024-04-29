@@ -1,13 +1,16 @@
 "use client"
 
 import { AddPersonForm } from "../addPerson";
-import { type Person } from "@/lib/data.d";
+
+import { type Parentage, type Person } from "@/lib/data.d";
+
 import {
-  createChildRel,
+  createParentage,
   createPerson,
-  deleteChildRel,
+  deleteRel,
   suggestChildren
 } from "@/lib/data";
+
 import { formatDate4Form } from "@/lib/utils";
 
 import {
@@ -40,7 +43,7 @@ export function AddChild({parent}: {parent: Person}) {
       if (child) {
         alert(`Person (${child.name}) record saved.`);
 
-        await createChildRel(parent.id, child.id);
+        await createParentage(parent.id, child.id);
         alert(`${parent.firstName} and ${child.firstName} are family.`);
 
         router.refresh();
@@ -72,7 +75,7 @@ export function LinkChild({parent}: {parent: Person}) {
 
   async function linkChild(child: Person) {
     try {
-      await createChildRel(parent.id, child.id);
+      await createParentage(parent.id, child.id);
       alert(`${parent.firstName} and ${child.firstName} are family.`);
 
       router.refresh();
@@ -97,13 +100,13 @@ export function LinkChild({parent}: {parent: Person}) {
   );
 }
 
-export function UnlinkChild({parent, child}: {parent: Person, child: Person}) {
+export function UnlinkChild({parentage}: {parentage: Parentage}) {
   const router = useRouter();
 
   async function unlinkChild() {
-    if (confirm(`Delete child relation with ${child.firstName}?`)) {
+    if (confirm(`Delete child relation with ${parentage.child.firstName}?`)) {
       try {
-        await deleteChildRel(parent.id, child.id);
+        await deleteRel(parentage.id);
         router.refresh();
       } catch (e: any) {
         console.log(e);
