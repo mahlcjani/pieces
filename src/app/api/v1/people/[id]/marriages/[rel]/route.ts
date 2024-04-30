@@ -76,19 +76,8 @@ export async function DELETE(
   { params }: { params: { id: string, rel: string }
 }) {
   try {
-    /*m: Marriage =*/ deleteRel(params.rel);
+    deleteRel(params.rel);
   } catch (e: any) {
     return Response.json({}, {status: 500, statusText: "Internal error"});
   }
-}
-
-async function fetch(
-  { params }: { params: { id: string, rel: string }
-}): Promise<Marriage> {
-  const marriage = await fetchMarriage(params.rel);
-  if (!marriage.spouses.find((s:Marriage) => s.id == params.id)) {
-    throw new Error("Marriage not accessible!");
-    //return Response.json({}, {status: 403, statusText: "Marriage not accessible!"});
-  }
-  return marriage;
 }

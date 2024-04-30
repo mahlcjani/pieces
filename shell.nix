@@ -2,8 +2,9 @@ with import <nixpkgs> {};
 
 mkShellNoCC {
     packages = [
+        act
         git
-        nodejs_21
+        nodejs
         openssh
         vim
     ];

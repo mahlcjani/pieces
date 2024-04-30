@@ -11,7 +11,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - name: Run component tests
-        run: nix-shell --run "npm run test"
+        run: |
+          nix-shell --run "npm run test"
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v25
+      - name: Run component tests
+        run: |
+          nix-shell --run "npm run test"
   api-tests:
     runs-on: ubuntu-latest
     container:
@@ -19,21 +28,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm clean-install
-      - name: Build
-        run: npm run build
       - name: Start neo4j
-        run: bin/neo4j-init --script src/lib/data/kennedies.cypher
-      - name: Start app
         run: |
-          npm start &
-          sleep 10
+          netstat -plunt
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
+      - name: Build
+        run: |
+          nix-shell --run "npm run build"
+      - name: Start the app
+        run: |
+          nix-shell --run "npm start" &
       - name: Run API tests
-        run: npx playwright test
+        run: |
+          npx playwright test
         env:
           HOME: /root
-
