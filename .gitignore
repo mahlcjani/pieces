@@ -1,4 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -8,6 +7,9 @@
 
 # testing
 /coverage
+/reports
+/playwright/.cache
+/playwright/reports
 
 # next.js
 /.next/
@@ -34,7 +36,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-/test-results/
-/playwright-report/
 /blob-report/
-/playwright/.cache/

@@ -12,6 +12,12 @@ export default defineConfig({
       "playwright/**",
       "tests-examples/**",
     ],
+    reporters: ["verbose", "html", "json", "junit"],
+    outputFile: {
+      html: "reports/test-results/html",
+      json: "reports/test-results.json",
+      junit: "reports/test-results.xml",
+    },
     setupFiles: []
   },
 });

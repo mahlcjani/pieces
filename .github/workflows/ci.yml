@@ -4,8 +4,12 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+env:
+  CI: true
+  NEXT_TELEMETRY_DISABLED: 1
 jobs:
   component-tests:
+    name: Component tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,25 +17,31 @@ jobs:
       - name: Run component tests
         run: |
           nix-shell --run "npm run test"
+      - name: Archive component tests results
+        uses: actions/upload-artifact@v4
+        with:
+          name: component-test-report
+          path: reports
   api-tests:
+    name: API tests
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.43.0-jammy
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - name: Start neo4j
+      - name: Install Playwright
         run: |
-          netstat -plunt
-          bin/neo4j-init --script src/lib/data/kennedies.cypher
-      - name: Build
+          nix-shell --run "npx playwright install chromium --with-deps"
+      - name: Build pieces
         run: |
           nix-shell --run "npm run build"
-      - name: Start the app
+      - name: Start neo4j
         run: |
-          nix-shell --run "npm start" &
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
       - name: Run API tests
         run: |
-          npx playwright test
-        env:
-          HOME: /root
+          nix-shell --run "npx playwright test"
+      - name: Archive API tests results
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-report
+          path: playwright/reports
