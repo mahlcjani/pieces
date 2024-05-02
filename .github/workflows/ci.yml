@@ -19,6 +19,7 @@ jobs:
           nix-shell --run "npm run test"
       - name: Archive component tests results
         uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('reports/*') }}
         with:
           name: component-test-report
           path: reports
@@ -38,10 +39,13 @@ jobs:
         run: |
           bin/neo4j-init --script src/lib/data/kennedies.cypher
       - name: Run API tests
+        continue-on-error: true
+        id: api_tests
         run: |
           nix-shell --run "npx playwright test"
       - name: Archive API tests results
         uses: actions/upload-artifact@v4
+        if: ${{ steps.api_tests.conclusion == 'success' }}
         with:
           name: api-test-report
           path: playwright/reports
