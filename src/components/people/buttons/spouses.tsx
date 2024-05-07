@@ -9,7 +9,8 @@ import {
   suggestSpouses,
   updateMarriage,
 } from "@/lib/actions/people";
-import { formatDate4Form } from "@/lib/utils";
+
+import dayjs from "@/lib/dayjs";
 
 import {
   Button,
@@ -34,6 +35,7 @@ import LinkOffOutlinedIcon from "@mui/icons-material/LinkOffOutlined";
 import { useDebouncedCallback } from "use-debounce";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { DatePickerInput } from "@mantine/dates";
 
 export function AddSpouse({person}: {person: Person}) {
   const [open, setOpen] = useState(false);
@@ -154,21 +156,22 @@ export function EditMarriage({person, marriage}: {person: Person, marriage: Marr
             <Stack spacing={1}>
               <FormControl>
                 <FormLabel>Begin date</FormLabel>
-                <Input
-                  type="date"
+                <DatePickerInput
                   name="beginDate"
                   required
-                  defaultValue={formatDate4Form(marriage?.beginDate)}
-                  variant="outlined"
+                  defaultValue={marriage?.beginDate ? dayjs(marriage?.beginDate).toDate() : null}
+                  size="md"
+                  dropdownType="modal"
                 />
               </FormControl>
               <FormControl>
                 <FormLabel>End date</FormLabel>
-                <Input
-                  type="date"
+                <DatePickerInput
                   name="endDate"
-                  defaultValue={formatDate4Form(marriage?.endDate)}
-                  variant="outlined"
+                  required
+                  defaultValue={marriage?.endDate ? dayjs(marriage?.endDate).toDate() : null}
+                  size="md"
+                  dropdownType="modal"
                 />
               </FormControl>
               <FormControl>
@@ -218,8 +221,8 @@ export function SuggestSpouses({
         query,
         person.id,
         person.sex == "Man" ? "Woman" : "Man",
-        new Date(person.birthDate.getFullYear()-20, 0, 1),
-        new Date(person.birthDate.getFullYear()+20, 11, 31)
+        dayjs(person.birthDate).subtract(20, "year").month(0).date(1).toDate(),
+        dayjs(person.birthDate).add(20, "year").month(11).date(31).toDate()
       )
     );
   }
@@ -243,7 +246,7 @@ export function SuggestSpouses({
                 {p.name}
               </Link>
             </td>
-            <td>{formatDate4Form(p.birthDate)}</td>
+            <td>{dayjs(p.birthDate).format("LL")}</td>
           </tr>
         ))}
         </tbody>

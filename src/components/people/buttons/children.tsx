@@ -11,8 +11,6 @@ import {
   suggestChildren
 } from "@/lib/actions/people";
 
-import { formatDate4Form } from "@/lib/utils";
-
 import {
   Button,
   FormControl,
@@ -29,6 +27,7 @@ import LinkOffOutlinedIcon from "@mui/icons-material/LinkOffOutlined";
 import { useDebouncedCallback } from "use-debounce";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import dayjs from "@/lib/dayjs";
 
 export function AddChild({parent}: {parent: Person}) {
   const [open, setOpen] = useState(false);
@@ -177,7 +176,7 @@ export function SuggestChildren({
                 {p.name ?? (p.surname + p.firstName)}
               </Link>
             </td>
-            <td>{formatDate4Form(p.birthDate)}</td>
+            <td>{dayjs(p.birthDate).format("LL")}</td>
           </tr>
         ))}
         </tbody>

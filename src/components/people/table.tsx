@@ -1,15 +1,11 @@
 
 import { fetchPeople } from "@/lib/actions/people";
-import { Link, List, ListItem, ListItemButton, ListItemContent, Table, Typography } from "@mui/joy";
+import { List, ListItem, ListItemButton, ListItemContent, Table, Typography } from "@mui/joy";
 
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
-function formatDate(date: Date | undefined) {
-  return date ? dayjs(date).format("YYYY-MM-DD") : "";
-}
-
-function formatNameDate(date?: Date) {
-  return date ? dayjs(date).format("DD MMMM") : "";
+function formatDate(date: Date | string | undefined) {
+  return date ? dayjs(date).format("ll") : "";
 }
 
 export default async function PeopleTable({

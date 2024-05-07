@@ -310,6 +310,7 @@ export async function updatePerson(id: string, formData: FormData): Promise<Pers
   // Logic for undefined vs null -
   // if property is undefined - leave it unchanged
   // if property is null - clear it
+
   function cypher(node: string, key: string, value: string|object) {
     return value !== undefined
       ? value ? key.endsWith("Date") ? `${node}.${key}=date(\$${key}),`

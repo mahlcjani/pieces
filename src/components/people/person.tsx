@@ -149,7 +149,7 @@ export default function ShowEditPerson({
           <DatePickerInput
             name="nameDate"
             defaultValue={props.nameDate ? dayjs(props.nameDate).toDate() : null}
-            valueFormat="MMM DD"
+            valueFormat="MMM D"
             readOnly={readOnly}
             clearable
             variant={readOnly ? "filled" : "default"}
@@ -163,7 +163,6 @@ export default function ShowEditPerson({
             name="birthDate"
             defaultValue={props.birthDate ? dayjs(props.birthDate).toDate() : null}
             readOnly={readOnly}
-            clearable
             variant={readOnly ? "filled" : "default"}
             className={styles.control}
             size="md"

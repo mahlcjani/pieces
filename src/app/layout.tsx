@@ -20,7 +20,7 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
     <html>
       <head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
-        <title>Various Pieces</title>
+        <title>Pieces</title>
         <ColorSchemeScript />
       </head>
       <body>

@@ -19,7 +19,7 @@ import {
   type Person
 } from "@/lib/actions/types";
 
-import { formatDate4Form } from "@/lib/utils";
+import dayjs from "@/lib/dayjs";
 
 import {
   ButtonGroup,
@@ -41,7 +41,7 @@ export function Marriages({person, records}: {person: Person, records: Marriage[
               {(person.sex === "Man" ? r.wife : r.husband).firstName}
             </Link>
           </td>
-          <td>{formatDate4Form(r.beginDate)} - {formatDate4Form(r.endDate)}</td>
+          <td>{dayjs(r.beginDate).format("LL")} - {dayjs(r.endDate).format("LL")}</td>
           <td>{r.endCause}</td>
           <td style={{textAlign: "right"}}>
             <EditMarriage person={person} marriage={r} />
@@ -78,7 +78,7 @@ export function Children({person, records}: {person: Person, records: Parentage[
               {rel.child.firstName}
             </Link>
           </td>
-          <td colSpan={2}>{formatDate4Form(rel.child.birthDate)} - {formatDate4Form(rel.child.deathDate)}</td>
+          <td colSpan={2}>{dayjs(rel.child.birthDate).format("LL")} - {dayjs(rel.child.deathDate).format("LL")}</td>
           <td style={{textAlign: "right"}}>
             <UnlinkChild parentage={rel} />
           </td>
@@ -113,7 +113,7 @@ export function Parents({person, records}: {person: Person, records: Parentage[]
               {rel.parent.firstName}
             </Link>
           </td>
-          <td colSpan={3}>{formatDate4Form(rel.parent.birthDate)} - {formatDate4Form(rel.parent.deathDate)}</td>
+          <td colSpan={3}>{dayjs(rel.parent.birthDate).format("LL")} - {dayjs(rel.parent.deathDate).format("LL")}</td>
         </tr>
       ))}
       </tbody>
@@ -135,7 +135,7 @@ export function Siblings({person, siblings}: {person: Person, siblings: Person[]
               {p.firstName}
             </Link>
           </td>
-          <td colSpan={3}>{formatDate4Form(p.birthDate)} - {formatDate4Form(p.deathDate)}</td>
+          <td colSpan={3}>{dayjs(p.birthDate).format("LL")} - {dayjs(p.deathDate).format("LL")}</td>
         </tr>
       ))}
       </tbody>
