@@ -15,7 +15,7 @@ import {
   fetchParents,
   fetchPerson,
   fetchSiblings
-} from "@/lib/data";
+} from "@/lib/actions/people";
 
 import {
   Breadcrumbs,

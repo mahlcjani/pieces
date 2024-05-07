@@ -1,7 +1,9 @@
 
+// All types are serializable in order to be transfered between server and client components
+// All dates are in ISO 8601 format
+
 export type Sex = "Man" | "Woman";
 
-// TODO (?): convert to interface
 export type Person = {
   id: string;
   sex: Sex;
@@ -13,10 +15,11 @@ export type Person = {
   middleNames?: string[];
   surname: string;
   birthName?: string;
-  birthDate: Date;
-  deathDate?: Date;
-  nameDate?: Date;
-}
+  // ISO 8601 format
+  birthDate: string;
+  deathDate?: string;
+  nameDate?: string;
+};
 
 /**
  * parent or child properties can be undefined because records can be returned in context of
@@ -26,7 +29,7 @@ export type Parentage = {
   id: string;
   parent: Person;
   child: Person;
-}
+};
 
 /**
  * spouses can be single Person meaning the other spouse when quering for spouses of
@@ -34,16 +37,16 @@ export type Parentage = {
  */
 export type Marriage = {
   id: string;
-  beginDate: Date;
-  endDate?: Date;
+  beginDate: string;
+  endDate?: string;
   // Don't care whos death
   endCause?: "Death" | "Divorce";
   wife: Person;
   husband: Person;
-}
+};
 
 export type Anniversary = {
-  date: Date;
+  date: string;
   type: "Birthday" | "Marriage" | "Nameday";
   cardinality: number;
   title?: string;

@@ -58,9 +58,7 @@ test("should add person using form", async ({ request }) => {
 
   await test.step("should post form", async () => {
     const response = await request.post("/api/v1/people", {
-      form: {
-        ...input
-      }
+      form: input
     });
     expect(response.status()).toBe(200);
 
@@ -70,9 +68,7 @@ test("should add person using form", async ({ request }) => {
 
   await test.step("should not re-post form", async () => {
     const response = await request.post("/api/v1/people", {
-      form: {
-        ...input
-      }
+      form: input
     });
     expect(response.status()).toBe(400);
   });

@@ -1,5 +1,5 @@
 
-import { createParentage, fetchChildren } from "@/lib/data";
+import { createParentage, fetchChildren } from "@/lib/actions/people";
 import { headers } from "next/headers";
 
 // GET /api/v1/people/[id]/children

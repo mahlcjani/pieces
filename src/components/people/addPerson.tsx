@@ -1,7 +1,7 @@
 "use client"
 
-import { type Person } from "@/lib/data.d";
-import { createPerson } from "@/lib/data";
+import { type Person } from "@/lib/actions/types";
+import { createPerson } from "@/lib/actions/people";
 
 import {
   Button,

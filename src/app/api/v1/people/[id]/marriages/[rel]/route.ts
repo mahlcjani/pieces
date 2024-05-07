@@ -1,11 +1,11 @@
 
-import { type Marriage } from "@/lib/data.d";
+import { type Marriage } from "@/lib/actions/types";
 
 import {
   deleteRel,
   fetchMarriage,
   updateMarriage
-} from "@/lib/data";
+} from "@/lib/actions/people";
 
 import { headers } from "next/headers";
 

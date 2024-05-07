@@ -1,16 +1,14 @@
-//"use server"
 
+import dayjs from "dayjs";
 import neo4j, {
-  Date as Neo4jDate,
-  Driver,
-  Integer as Neo4jInteger,
-  Node as Neo4jNode,
   type RecordShape,
+  Driver,
   QueryResult,
   Session,
   Transaction,
   ManagedTransaction,
-  isDate
+  isDate,
+  isInt
 } from "neo4j-driver"
 
 // Temporary expose neo4j interface
@@ -19,8 +17,6 @@ export {
   type RecordShape,
   type QueryResult
 } from "neo4j-driver";
-
-import { unstable_noStore as noStore } from "next/cache";
 
 // Properties are not exported :(
 export type Properties = {
@@ -71,13 +67,25 @@ export async function getSession(): Promise<Session> {
   });
 }
 
-// Convert neo4j date to javascript date
-// (todo - incorporate numbers)
+export const filterInteger = (value: any): Object => {
+  // This application is not using big numbers so toInt() conversion is just fine
+  return isInt(value) ? value.toInt() : value;
+}
+
+export const filterDate = (value: any): Object => {
+  return isDate<number>(value) ? dayjs(value.toStandardDate()).format("YYYY-MM-DD") : value;
+}
+
+// Convert from neo4j types (only used, though)
+export const filterObject = (value: any): Object => {
+  return filterDate(filterInteger(value));
+}
+
 export const parseNode = (node: RecordShape<string, any>): Object => {
   if (node.properties !== undefined) {
     return Object.fromEntries(
       Object.entries(node.properties).map(
-        ([key, val]) => [key, isDate(val) ? val.toStandardDate() : val])
+        ([key, val]) => [key, filterObject(val)])
     );
   }
   // Is empty object really the best option?
@@ -92,8 +100,6 @@ export const parseNode = (node: RecordShape<string, any>): Object => {
  * @returns
  */
 export async function fetchNodeRelatonships(nodeId: string, type: string, direction: RelDirection): Promise<Relationship[]> {
-  noStore();
-
   function path(direction: RelDirection) {
     switch (direction) {
       case RelDirection.OUT:
@@ -161,8 +167,6 @@ export async function fetchNodeRelatonships(nodeId: string, type: string, direct
  * @returns
  */
 export async function fetchNodeRelatonship(relId: string): Promise<Relationship|undefined> {
-  noStore();
-
   const session = await getSession();
 
   try {
@@ -221,8 +225,6 @@ type TransactionWork<T> = (tx: Transaction) => Promise<T> | T;
 type ManagedTransactionWork<T> = (tx: ManagedTransaction) => Promise<T> | T;
 
 export async function executeRead(work: ManagedTransactionWork<QueryResult<RecordShape>>): Promise<QueryResult<RecordShape>|undefined> {
-  noStore();
-
   const session = await getSession();
 
   try {

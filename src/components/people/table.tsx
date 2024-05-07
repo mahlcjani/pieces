@@ -1,5 +1,5 @@
 
-import { fetchPeople } from "@/lib/data";
+import { fetchPeople } from "@/lib/actions/people";
 import { Link, List, ListItem, ListItemButton, ListItemContent, Table, Typography } from "@mui/joy";
 
 import dayjs from "dayjs";

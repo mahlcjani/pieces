@@ -1,5 +1,5 @@
 
-import { fetchSiblings } from "@/lib/data";
+import { fetchSiblings } from "@/lib/actions/people";
 
 export async function GET(
   request: Request,

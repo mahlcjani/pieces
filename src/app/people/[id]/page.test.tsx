@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { render, screen, userEvent } from "@/lib/test-utils";
 
 import Page from "./page";
-import { Person } from "@/lib/data.d";
+import { Person } from "@/lib/actions/types";
 
 const person: Person = {
   id: "1",
@@ -14,7 +14,7 @@ const person: Person = {
 };
 
 beforeEach(() => {
-  vi.mock("@/lib/data", () => {
+  vi.mock("@/lib/actions/people", () => {
     return {
       fetchPerson: () => {
         return person;

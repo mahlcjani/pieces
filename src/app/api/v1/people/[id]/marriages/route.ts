@@ -1,5 +1,5 @@
 
-import { createMarriage, fetchMarriages } from "@/lib/data";
+import { createMarriage, fetchMarriages } from "@/lib/actions/people";
 import { headers } from "next/headers";
 
 export async function GET(

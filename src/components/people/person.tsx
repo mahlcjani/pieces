@@ -1,8 +1,11 @@
 "use client"
 
-import { type Person } from "@/lib/data.d";
-import { updatePerson } from "@/lib/data";
-import { formatDate4Form, formatString4Form } from "@/lib/utils";
+import { type Person } from "@/lib/actions/types";
+import { updatePerson } from "@/lib/actions/people";
+import { formatString4Form } from "@/lib/utils";
+
+import { DatePickerInput } from '@mantine/dates';
+import { Input } from "@mantine/core";
 
 import styles from "../people.module.css";
 
@@ -10,7 +13,6 @@ import {
   Button,
   ButtonGroup,
   Divider,
-  Input,
   Stack,
 } from "@mui/joy";
 
@@ -26,11 +28,11 @@ export default function ShowEditPerson({
   props: {
     name: string,
     firstName: string,
-    nameDate?: Date,
+    nameDate?: string,
     surname: string,
     birthName?: string,
-    birthDate: Date,
-    deathDate?: Date
+    birthDate: string,
+    deathDate?: string
   }
 }) {
   const [firstName, setFirstName] = useState(formatString4Form(props.firstName));
@@ -101,9 +103,10 @@ export default function ShowEditPerson({
             name="firstName"
             value={firstName}
             readOnly={readOnly}
-            variant={readOnly ? "plain" : "outlined"}
+            variant={readOnly ? "filled" : "default"}
             onChange={(event) => setFirstName(event.target.value)}
             className={styles.control}
+            size="md"
           />
         </label>
         <label className={styles.formControl}>
@@ -112,9 +115,10 @@ export default function ShowEditPerson({
             name="surname"
             value={surname}
             readOnly={readOnly}
-            variant={readOnly ? "plain" : "outlined"}
+            variant={readOnly ? "filled" : "default"}
             onChange={(event) => setSurname(event.target.value)}
             className={styles.control}
+            size="md"
           />
         </label>
         <label className={styles.formControl}>
@@ -123,9 +127,10 @@ export default function ShowEditPerson({
             name="name"
             value={name}
             readOnly={readOnly}
-            variant={readOnly ? "plain" : "outlined"}
+            variant={readOnly ? "filled" : "default"}
             onChange={(event) => updateName(event.target.value)}
             className={styles.control}
+            size="md"
           />
         </label>
         <label className={styles.formControl}>
@@ -134,41 +139,46 @@ export default function ShowEditPerson({
             name="birthName"
             defaultValue={props.birthName}
             readOnly={readOnly}
-            variant={readOnly ? "plain" : "outlined"}
+            variant={readOnly ? "filled" : "default"}
             className={styles.control}
+            size="md"
           />
         </label>
         <label className={styles.formControl}>
           <div className={styles.label}>Name date</div>
-          <Input
-            type="date"
+          <DatePickerInput
             name="nameDate"
-            defaultValue={formatDate4Form(props.nameDate)}
+            defaultValue={props.nameDate ? dayjs(props.nameDate).toDate() : null}
+            valueFormat="MMM DD"
             readOnly={readOnly}
-            variant={readOnly ? "plain" : "outlined"}
+            clearable
+            variant={readOnly ? "filled" : "default"}
             className={styles.control}
+            size="md"
           />
         </label>
         <label className={styles.formControl}>
           <div className={styles.label}>Birth date</div>
-          <Input
-            type="date"
+          <DatePickerInput
             name="birthDate"
-            defaultValue={formatDate4Form(props.birthDate)}
+            defaultValue={props.birthDate ? dayjs(props.birthDate).toDate() : null}
             readOnly={readOnly}
-            variant={readOnly ? "plain" : "outlined"}
+            clearable
+            variant={readOnly ? "filled" : "default"}
             className={styles.control}
+            size="md"
           />
         </label>
         <label className={styles.formControl}>
           <div className={styles.label}>Death date</div>
-          <Input
-            type="date"
+          <DatePickerInput
             name="deathDate"
-            defaultValue={formatDate4Form(props.deathDate)}
+            defaultValue={props.deathDate ? dayjs(props.deathDate).toDate() : null}
             readOnly={readOnly}
-            variant={readOnly ? "plain" : "outlined"}
+            clearable
+            variant={readOnly ? "filled" : "default"}
             className={styles.control}
+            size="md"
           />
         </label>
         <Divider />

@@ -17,7 +17,7 @@ import {
   type Marriage,
   type Parentage,
   type Person
-} from "@/lib/data.d";
+} from "@/lib/actions/types";
 
 import { formatDate4Form } from "@/lib/utils";
 

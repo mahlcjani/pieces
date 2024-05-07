@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test as base, vi } from "vitest";
 import { render, screen, } from "@/lib/test-utils";
 
 import { Children, Parents, Siblings, Marriages } from "./relatives";
-import { Parentage, type Marriage, type Person } from "@/lib/data.d";
+import { Parentage, type Marriage, type Person } from "@/lib/actions/types";
 
 import testData from "@/lib/test-data.json"
 
@@ -68,7 +68,7 @@ const test = base.extend({
 });
 
 beforeEach(() => {
-  vi.mock("@/lib/data", () => {
+  vi.mock("@/lib/actions/people", () => {
     return {
       suggestChildren: () => {
         console.log("Mocked suggestChildren() called");

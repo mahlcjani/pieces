@@ -2,14 +2,14 @@
 
 import { AddPersonForm } from "../addPerson";
 
-import { type Parentage, type Person } from "@/lib/data.d";
+import { type Parentage, type Person } from "@/lib/actions/types";
 
 import {
   createParentage,
   createPerson,
   deleteRel,
   suggestChildren
-} from "@/lib/data";
+} from "@/lib/actions/people";
 
 import { formatDate4Form } from "@/lib/utils";
 

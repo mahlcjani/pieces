@@ -5,7 +5,7 @@ import { AddSpouse, LinkSpouse } from "./spouses";
 import testData from "@/lib/test-data.json"
 
 beforeEach(() => {
-  vi.mock("@/lib/data", () => {
+  vi.mock("@/lib/actions/people", () => {
     return {
       suggestSpouses: () => {
         return [

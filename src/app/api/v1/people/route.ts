@@ -1,6 +1,6 @@
 
-import { type Person } from "@/lib/data.d";
-import { createPerson, fetchPeople } from "@/lib/data";
+import { type Person } from "@/lib/actions/types";
+import { createPerson, fetchPeople } from "@/lib/actions/people";
 
 import { headers } from "next/headers";
 
@@ -13,37 +13,29 @@ export async function GET(request: Request) {
   const limit: number = Number(searchParams.get("limit")) || 10;
 
   const people: Person[] = await fetchPeople(query, offset, limit);
-  return Response.json(people.map((person) => {
-    return {
-      ...person,
-      birthDate: person.birthDate?.toISOString().substring(0, 10),
-      deathDate: person.deathDate?.toISOString().substring(0, 10),
-      nameDate: person.nameDate?.toISOString().substring(0, 10),
-    }
-  }));
+  return Response.json(people);
 }
 
 /*
 curl \
   --request POST \
   --header "Content-Type: application/json" \
-  --data '{"name": "Maciej Misiołek", "birthDate": "1971-11-18"}'
+  --data '{"name": "John Doe", "birthDate": "1970-01-01"}'
 
 curl \
   --request POST \
   --header "Content-type: application/x-www-form-urlencoded" (also implied by curl)
-  --data 'name=Maciej Misiołek' \
-  --data 'birthDate=1971-11-18'
+  --data 'name=John Doe' \
+  --data 'birthDate=1970-01-01'
 
 curl \
   --request POST \
   --header "Content-Type: multipart/form-data" \ (also implied by curl)
-  --form 'name=Maciej Misiołek' \
-  --form 'birthDate=1971-11-18'
+  --form 'name=John Doe' \
+  --form 'birthDate=1970-01-01'
 
 */
 export async function POST(request: Request) {
-
   const headersList = headers();
   const contentType = headersList.get("Content-type");
 
@@ -66,12 +58,7 @@ export async function POST(request: Request) {
       const record = await createPerson(sex, formData);
       console.log(record);
 
-      return Response.json({
-        ...record,
-        birthDate: record?.birthDate?.toISOString().substring(0, 10),
-        deathDate: record?.deathDate?.toISOString().substring(0, 10),
-        nameDate: record?.nameDate?.toISOString().substring(0, 10),
-      });
+      return Response.json(record);
     } catch (e: any) {
       return Response.json({error: e.message}, {status: 400, statusText: "Bad request"});
     }

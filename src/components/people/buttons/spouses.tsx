@@ -1,14 +1,14 @@
 "use client"
 
 import { AddPersonForm } from "../addPerson";
-import { Marriage, type Person } from "@/lib/data.d";
+import { Marriage, type Person } from "@/lib/actions/types";
 import {
   createMarriage,
   createPerson,
   deleteRel,
   suggestSpouses,
   updateMarriage,
-} from "@/lib/data";
+} from "@/lib/actions/people";
 import { formatDate4Form } from "@/lib/utils";
 
 import {

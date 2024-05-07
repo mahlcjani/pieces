@@ -84,7 +84,13 @@ export class API {
   }
 
   async get(path: any, params?: any): Promise<any> {
+try {
     return await this.request.get(this.endpoint(path), { params: params });
+} catch (e: any) {
+console.log(`GET ${this.endpoint(path)}`);
+console.log(e);
+    return await this.request.get(this.endpoint(path), { params: params });
+}
   }
 
   async delete(path: any, params?: any): Promise<any> {

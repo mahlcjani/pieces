@@ -1,50 +1,15 @@
 "use client"
 
-import { type Anniversary } from "@/lib/data.d";
-import { fetchEvents } from "@/lib/data";
+import { type Anniversary } from "@/lib/actions/types";
+import { fetchEvents } from "@/lib/actions/calendar";
+
+import dayjs from "dayjs";
 
 import {
   EventContentArg,
   EventInput,
   EventSourceFuncArg
 } from "@fullcalendar/core"
-
-/*
-type EventSourceFuncArg = {
-  start: Date;
-  end: Date;
-  startStr: string;
-  endStr: string;
-  timeZone: string;
-};
-type EventSourceFunc = (
-    (arg: EventSourceFuncArg, successCallback: (eventInputs: EventInput[]) => void, failureCallback: (error: Error) => void)
-     => void
-  )
-| (
-    (arg: EventSourceFuncArg)
-     => Promise<EventInput[]>
-  );
-interface EventContentArg {
-    event: EventImpl;
-    timeText: string;
-    backgroundColor: string;
-    borderColor: string;
-    textColor: string;
-    isDraggable: boolean;
-    isStartResizable: boolean;
-    isEndResizable: boolean;
-    isMirror: boolean;
-    isStart: boolean;
-    isEnd: boolean;
-    isPast: boolean;
-    isFuture: boolean;
-    isToday: boolean;
-    isSelected: boolean;
-    isDragging: boolean;
-    isResizing: boolean;
-    view: ViewApi;
-}*/
 
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
@@ -69,8 +34,7 @@ export default function Calendar() {
         title: e.type + " of " +
           e.people.map((p: any) => p.firstName).join() +
           "(" + e.cardinality + ")",
-        start: e.date,
-        //url: "../person/" + "111",
+        start: dayjs(e.date).toDate(),
         extendedProps: {
           data: e
         }
@@ -84,7 +48,7 @@ export default function Calendar() {
     }
 
   function badgeColor(e: Anniversary) {
-    return e.people.some(p => typeof p.deathDate !== "undefined") ? "warning" : "primary";
+    return e.people.some(p => p.deathDate !== undefined) ? "warning" : "primary";
   }
 
   function renderEventContent({event}: EventContentArg) {

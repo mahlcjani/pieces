@@ -5,7 +5,7 @@ import Pagination from "@/components/people/pagination";
 import Search from "@/components/people/search";
 import Table from "@/components/people/table";
 
-import { countPeople } from "@/lib/data";
+import { countPeople } from "@/lib/actions/people";
 
 import {
   Box,

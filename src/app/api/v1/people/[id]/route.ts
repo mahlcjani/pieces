@@ -1,4 +1,4 @@
-import { type Person } from "@/lib/data.d";
+import { type Person } from "@/lib/actions/types";
 
 import {
   deletePerson,
@@ -8,7 +8,7 @@ import {
   fetchParents,
   fetchPerson,
   fetchSiblings,
-} from "@/lib/data";
+} from "@/lib/actions/people";
 
 import { headers } from "next/headers";
 
@@ -31,10 +31,7 @@ export async function GET(
     ])
 
     let result: any = {
-      ...person,
-      birthDate: person.birthDate?.toISOString().substring(0, 10),
-      deathDate: person.deathDate?.toISOString().substring(0, 10),
-      nameDate: person.nameDate?.toISOString().substring(0, 10),
+      ...person
   }
 
     // Compose result
