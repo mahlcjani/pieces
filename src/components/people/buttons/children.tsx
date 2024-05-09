@@ -176,7 +176,7 @@ export function SuggestChildren({
                 {p.name ?? (p.surname + p.firstName)}
               </Link>
             </td>
-            <td>{dayjs(p.birthDate).format("LL")}</td>
+            <td>{dayjs(p.birthDate).format("ll")}</td>
           </tr>
         ))}
         </tbody>

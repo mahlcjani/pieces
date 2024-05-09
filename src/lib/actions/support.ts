@@ -64,8 +64,13 @@ export function parsePersonNode(node: RecordShape): Person {
 }
 
 function toDateString(value: string|undefined): string|undefined {
-  return value === undefined || value === null ? value
-    : dayjs(value).format("YYYY-MM-DD");
+  switch (value) {
+    case undefined:
+    case "":
+      return value;
+    default:
+      return dayjs(value).format("YYYY-MM-DD");
+  }
 }
 
 export function toPersonObject(formData: FormData): Partial<Person> {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Input, FormControl, Link } from "@mui/joy";
+import { TextInput } from "@mantine/core";
 import { useDebouncedCallback } from "use-debounce";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
@@ -23,16 +23,12 @@ export default function Search({ placeholder }: { placeholder: string }) {
   }, 300);
 
   return (
-    <FormControl sx={{flexGrow: 1}}>
-      {/*<label htmlFor="query">
-        Find people
-      </label>*/}
-      <Input
+      <TextInput
         id="query"
         placeholder={placeholder}
         onChange={(e) => { handleSearch(e.target.value) }}
         defaultValue={searchParams.get("query")?.toString()}
+        style={{flex: 1}}
       />
-    </FormControl>
   );
 }

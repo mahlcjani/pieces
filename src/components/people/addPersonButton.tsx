@@ -1,27 +1,28 @@
 "use client"
 
 import AddPersonForm from "./addPerson";
-import { Button, Modal, ModalDialog } from "@mui/joy";
-import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
-
-import { useState } from "react";
+import { ActionIcon, Modal } from "@mantine/core";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { IconUserPlus } from '@tabler/icons-react';
 
 export default function AddPerson() {
-  const [open, setOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const isSmallDevice = useMediaQuery("(max-width: 50em)");
 
   return (
     <>
-      <Button variant="outlined" color="neutral" onClick={() => setOpen(true)}>
-        <PersonAddOutlinedIcon /> Add Person
-      </Button>
+      <ActionIcon onClick={open} variant="light">
+        <IconUserPlus />
+      </ActionIcon>
       <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        title="Add Person"
+        opened={opened}
+        onClose={close}
+        withCloseButton={isSmallDevice}
+        fullScreen={isSmallDevice}
+        transitionProps={{ transition: "slide-left", duration: 400 }}
       >
-        <ModalDialog>
-          <AddPersonForm />
-        </ModalDialog>
+        <AddPersonForm />
       </Modal>
     </>
   );

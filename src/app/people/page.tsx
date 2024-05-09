@@ -4,16 +4,8 @@ import AddPerson from "@/components/people/addPersonButton";
 import Pagination from "@/components/people/pagination";
 import Search from "@/components/people/search";
 import Table from "@/components/people/table";
-
 import { countPeople } from "@/lib/actions/people";
-
-import {
-  Box,
-  Breadcrumbs,
-  Link,
-  Stack,
-  Typography
-} from "@mui/joy";
+import { Anchor, Breadcrumbs, Group, Text } from "@mantine/core";
 
 export default async function Page({
   searchParams,
@@ -33,15 +25,16 @@ export default async function Page({
 
   return (
     <div style={{display: "flex", flexDirection: "column", height: "100%"}}>
-      <Breadcrumbs aria-label="breadcrumb" sx={{boxShadow: 1}}>
-        <Link href="/">Home</Link>
-        <Typography>People</Typography>
+
+      <Breadcrumbs m="md">
+        <Anchor key="home" href="/" size="lg">Home</Anchor>
+        <Text size="lg">People</Text>
       </Breadcrumbs>
 
-      <Stack direction="row" spacing={1} sx={{margin: 1}}>
+      <Group justify="space-around">
         <Search placeholder="Search people..." />
         <AddPerson />
-      </Stack>
+      </Group>
 
       <div style={{flex: 1}}>
         <Table

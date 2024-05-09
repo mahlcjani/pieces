@@ -4,21 +4,23 @@ import { type Person } from "@/lib/actions/types";
 import { updatePerson } from "@/lib/actions/people";
 import { formatString4Form } from "@/lib/utils";
 
-import { DatePickerInput } from '@mantine/dates';
-import { Input } from "@mantine/core";
-
-import styles from "../people.module.css";
-
 import {
   Button,
-  ButtonGroup,
   Divider,
+  Group,
+  Input,
   Stack,
-} from "@mui/joy";
+  TextInput
+} from "@mantine/core";
 
-import dayjs from "dayjs";
+import { DatePickerInput } from '@mantine/dates';
+
+import dayjs from "@/lib/dayjs";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import styles from "../people.module.css";
 
 export default function ShowEditPerson({
   id,
@@ -96,14 +98,14 @@ export default function ShowEditPerson({
 
   return (
     <form>
-      <Stack spacing={1}>
+      <Stack>
         <label className={styles.formControl}>
           <div className={styles.label}>First name</div>
           <Input
             name="firstName"
             value={firstName}
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             onChange={(event) => setFirstName(event.target.value)}
             className={styles.control}
             size="md"
@@ -115,7 +117,7 @@ export default function ShowEditPerson({
             name="surname"
             value={surname}
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             onChange={(event) => setSurname(event.target.value)}
             className={styles.control}
             size="md"
@@ -127,7 +129,7 @@ export default function ShowEditPerson({
             name="name"
             value={name}
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             onChange={(event) => updateName(event.target.value)}
             className={styles.control}
             size="md"
@@ -135,11 +137,11 @@ export default function ShowEditPerson({
         </label>
         <label className={styles.formControl}>
           <div className={styles.label}>Birth name</div>
-          <Input
+          <TextInput
             name="birthName"
             defaultValue={props.birthName}
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             className={styles.control}
             size="md"
           />
@@ -152,7 +154,7 @@ export default function ShowEditPerson({
             valueFormat="MMM D"
             readOnly={readOnly}
             clearable
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             className={styles.control}
             size="md"
           />
@@ -162,8 +164,9 @@ export default function ShowEditPerson({
           <DatePickerInput
             name="birthDate"
             defaultValue={props.birthDate ? dayjs(props.birthDate).toDate() : null}
+            valueFormat="ll"
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             className={styles.control}
             size="md"
           />
@@ -173,25 +176,28 @@ export default function ShowEditPerson({
           <DatePickerInput
             name="deathDate"
             defaultValue={props.deathDate ? dayjs(props.deathDate).toDate() : null}
+            valueFormat="ll"
             readOnly={readOnly}
             clearable
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             className={styles.control}
             size="md"
           />
         </label>
+
         <Divider />
-        <ButtonGroup>
+
+        <Group grow={true}>
           <Button disabled={!readOnly} onClick={() => { setReadOnly(false); }}>
             Edit
           </Button>
           <Button disabled={readOnly} type="submit" formAction={submitForm}>
             Update
           </Button>
-          <Button disabled={readOnly} onClick={() => { setReadOnly(true) }}>
+          <Button disabled={readOnly} type="reset" onClick={() => { setReadOnly(true) }}>
             Cancel
           </Button>
-        </ButtonGroup>
+        </Group>
       </Stack>
     </form>
   );

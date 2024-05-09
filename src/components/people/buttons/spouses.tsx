@@ -13,32 +13,38 @@ import {
 import dayjs from "@/lib/dayjs";
 
 import {
+  ActionIcon,
   Button,
-  ButtonGroup,
   Divider,
-  FormControl,
-  FormLabel,
-  IconButton,
+  Group,
   Input,
-  Link,
   Modal,
-  ModalDialog,
-  Option,
   Select,
   Stack,
+  Text
+} from "@mantine/core";
+
+
+import { DatePickerInput } from "@mantine/dates";
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { modals } from '@mantine/modals';
+
+
+import {
+  IconButton,
+  Link,
   Table
 } from "@mui/joy";
 
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import LinkOffOutlinedIcon from "@mui/icons-material/LinkOffOutlined";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
 
 import { useDebouncedCallback } from "use-debounce";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { DatePickerInput } from "@mantine/dates";
 
 export function AddSpouse({person}: {person: Person}) {
-  const [open, setOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const isSmallDevice = useMediaQuery("(max-width: 50em)");
   const router = useRouter();
 
   async function addSpouse(formData: FormData) {
@@ -54,7 +60,7 @@ export function AddSpouse({person}: {person: Person}) {
         alert(`${person.firstName} and ${spouse.firstName} are family.`);
 
         router.refresh();
-        setOpen(false);
+        close();
       }
     } catch (e: any) {
       console.log(e);
@@ -64,20 +70,26 @@ export function AddSpouse({person}: {person: Person}) {
 
   return (
     <>
-      <Button variant="outlined" color="neutral" onClick={() => setOpen(true)}>
+      <Button variant="outlined" color="neutral" onClick={open}>
         Add Spouse
       </Button>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog>
-          <AddPersonForm omitFields={["sex"]} onCreate={addSpouse} />
-        </ModalDialog>
+      <Modal
+        title="New person"
+        opened={opened}
+        onClose={close}
+        withCloseButton={isSmallDevice}
+        fullScreen={isSmallDevice}
+        transitionProps={{ transition: "slide-left", duration: 400 }}
+      >
+        <AddPersonForm omitFields={["sex"]} onCreate={addSpouse} />
       </Modal>
     </>
   );
 }
 
 export function LinkSpouse({person}: {person: Person}) {
-  const [open, setOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const isSmallDevice = useMediaQuery("(max-width: 50em)");
   const router = useRouter();
 
   async function linkSpouse(spouse: Person) {
@@ -86,7 +98,7 @@ export function LinkSpouse({person}: {person: Person}) {
       alert(`${person.firstName} and ${spouse.firstName} are family.`);
 
       router.refresh();
-      setOpen(false);
+      close();
     } catch (e: any) {
       console.log(e);
       alert(e.message);
@@ -95,13 +107,24 @@ export function LinkSpouse({person}: {person: Person}) {
 
   return (
     <>
-      <Button variant="outlined" color="neutral" onClick={() => setOpen(true)}>
+      <Button variant="outlined" color="neutral" onClick={open}>
         Link Spouse
       </Button>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog sx={{minHeight: 400}}>
-          <SuggestSpouses person={person} onPersonClick={linkSpouse} />
-        </ModalDialog>
+      <Modal
+        title="Find spouse"
+        opened={opened}
+        onClose={close}
+        withCloseButton={isSmallDevice}
+        fullScreen={isSmallDevice}
+        transitionProps={{ transition: "slide-left", duration: 400 }}
+      >
+        <SuggestSpouses person={person} onPersonClick={linkSpouse} />
+        <Divider />
+        <Group>
+          <Button onClick={close}>
+            Close
+          </Button>
+        </Group>
       </Modal>
     </>
   );
@@ -110,8 +133,22 @@ export function LinkSpouse({person}: {person: Person}) {
 export function UnlinkSpouse({person, marriage}: {person: Person, marriage: Marriage}) {
   const router = useRouter();
 
+  function confirmDelete() {
+    modals.openConfirmModal({
+      title: "Delete marriage",
+      withCloseButton: false,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete marriage of {marriage.wife.firstName} and {marriage.husband.firstName}?
+        </Text>
+      ),
+      labels: { confirm: "Yes", cancel: "No" },
+      confirmProps: { color: "red" },
+      onConfirm: () => unlinkSpouse()
+    });
+  }
+
   async function unlinkSpouse() {
-    if (confirm(`Delete marriage of ${marriage.wife.firstName} and ${marriage.husband.firstName}?`)) {
       try {
         await deleteRel(marriage.id);
         router.refresh();
@@ -119,18 +156,18 @@ export function UnlinkSpouse({person, marriage}: {person: Person, marriage: Marr
         console.log(e);
         alert(e.message);
       }
-    }
   }
 
   return (
-    <IconButton aria-label="Delete relationship" onClick={() => unlinkSpouse()}>
-      <LinkOffOutlinedIcon />
-    </IconButton>
+    <ActionIcon aria-label="Delete" onClick={confirmDelete} variant="transparent">
+      <IconTrash />
+    </ActionIcon>
   )
 }
 
 export function EditMarriage({person, marriage}: {person: Person, marriage: Marriage}) {
-  const [open, setOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const isSmallDevice = useMediaQuery("(max-width: 50em)");
   const router = useRouter();
 
   async function submitForm(formData: FormData) {
@@ -138,7 +175,7 @@ export function EditMarriage({person, marriage}: {person: Person, marriage: Marr
       await updateMarriage(marriage.id, formData);
 
       router.refresh();
-      setOpen(false);
+      close();
     } catch (e: any) {
       console.log(e);
       alert(e.message);
@@ -147,51 +184,57 @@ export function EditMarriage({person, marriage}: {person: Person, marriage: Marr
 
   return (
     <>
-      <IconButton aria-label="Edit relationship" onClick={() => setOpen(true)}>
-        <EditOutlinedIcon />
-      </IconButton>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog>
+      <ActionIcon aria-label="Edit details" onClick={open} variant="transparent">
+        <IconEdit />
+      </ActionIcon>
+      <Modal
+        title="Edit marriage"
+        opened={opened}
+        onClose={close}
+        withCloseButton={isSmallDevice}
+        fullScreen={isSmallDevice}
+        transitionProps={{ transition: "slide-left", duration: 400 }}
+      >
           <form>
-            <Stack spacing={1}>
-              <FormControl>
-                <FormLabel>Begin date</FormLabel>
-                <DatePickerInput
-                  name="beginDate"
-                  required
-                  defaultValue={marriage?.beginDate ? dayjs(marriage?.beginDate).toDate() : null}
-                  size="md"
-                  dropdownType="modal"
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>End date</FormLabel>
-                <DatePickerInput
-                  name="endDate"
-                  required
-                  defaultValue={marriage?.endDate ? dayjs(marriage?.endDate).toDate() : null}
-                  size="md"
-                  dropdownType="modal"
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel htmlFor="endCause">End cause</FormLabel>
-                <Select name="endCause" defaultValue={marriage?.endCause}>
-                  <Option value="Death">Death</Option>
-                  <Option value="Divorce">Divorce</Option>
-                </Select>
-              </FormControl>
+            <Stack>
+              <DatePickerInput
+                name="beginDate"
+                label="Begin date"
+                required
+                defaultValue={marriage?.beginDate ? dayjs(marriage?.beginDate).toDate() : null}
+                size="md"
+              />
+              <DatePickerInput
+                name="endDate"
+                label="End date"
+                clearable
+                defaultValue={marriage?.endDate ? dayjs(marriage?.endDate).toDate() : null}
+                size="md"
+              />
+              <Select
+                name="endCause"
+                label="End cause"
+                data={[
+                  { value: "Death", label: "Death" },
+                  { value: "Divorce", label: "Divorce" },
+                ]}
+                defaultValue={marriage?.endCause}
+                checkIconPosition="left"
+                size="md"
+              />
 
               <Divider />
 
-              <ButtonGroup>
+              <Group>
                 <Button type="submit" formAction={submitForm}>
                   Update
                 </Button>
-              </ButtonGroup>
+                <Button onClick={close}>
+                  Close
+                </Button>
+              </Group>
             </Stack>
           </form>
-        </ModalDialog>
       </Modal>
     </>
   )
@@ -229,13 +272,11 @@ export function SuggestSpouses({
 
   return (
     <>
-      <FormControl>
-        <Input
-          id="query"
-          onChange={(e) => { queryChanged(e.target.value) }}
-          value={query}
-        />
-      </FormControl>
+      <Input
+        id="query"
+        onChange={(e) => { queryChanged(e.target.value) }}
+        value={query}
+      />
 
       <Table>
         <tbody>
@@ -246,7 +287,7 @@ export function SuggestSpouses({
                 {p.name}
               </Link>
             </td>
-            <td>{dayjs(p.birthDate).format("LL")}</td>
+            <td>{dayjs(p.birthDate).format("ll")}</td>
           </tr>
         ))}
         </tbody>
