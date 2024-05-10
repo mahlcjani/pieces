@@ -1,7 +1,7 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
- 
+
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
@@ -18,7 +18,7 @@ export default defineConfig({
       json: "reports/test-results.json",
       junit: "reports/test-results.xml",
     },
-    setupFiles: []
+    setupFiles: ["./vitest.setup.js"]
   },
 });
 

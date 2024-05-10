@@ -1,6 +1,6 @@
 "use client"
 
-import AddPersonForm from "./addPerson";
+import { AddPersonForm } from "../person";
 import { ActionIcon, Modal } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { IconUserPlus } from '@tabler/icons-react';

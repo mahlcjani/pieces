@@ -1,28 +1,28 @@
 "use client"
 
-import { AddPersonForm } from "../addPerson";
-
+import { AddPersonForm } from "../person";
 import { type Parentage, type Person } from "@/lib/actions/types";
 
 import {
   createParentage,
-  createPerson,
   deleteRel,
   suggestChildren
 } from "@/lib/actions/people";
 
 import {
+  ActionIcon,
+  Anchor,
   Button,
-  FormControl,
-  IconButton,
-  Input,
-  Link,
   Modal,
-  ModalDialog,
-  Table
-} from "@mui/joy";
+  Table,
+  Text,
+  TextInput
+} from "@mantine/core";
 
-import LinkOffOutlinedIcon from "@mui/icons-material/LinkOffOutlined";
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { modals } from '@mantine/modals';
+
+import { IconTrash } from "@tabler/icons-react";
 
 import { useDebouncedCallback } from "use-debounce";
 import { useRouter } from "next/navigation";
@@ -30,70 +30,72 @@ import { useEffect, useState } from "react";
 import dayjs from "@/lib/dayjs";
 
 export function AddChild({parent}: {parent: Person}) {
-  const [open, setOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const isSmallDevice = useMediaQuery("(max-width: 50em)");
   const router = useRouter();
 
-  async function addChild(formData: FormData) {
+  async function childCreated(child: Person) {
     try {
-      const child: Person|undefined = await createPerson(
-        formData.get("sex")?.toString() ?? "Man",
-        formData
-      );
-      if (child) {
-        alert(`Person (${child.name}) record saved.`);
-
-        await createParentage(parent.id, child.id);
-        alert(`${parent.firstName} and ${child.firstName} are family.`);
-
-        router.refresh();
-        setOpen(false);
-      }
+      await createParentage(parent.id, child.id);
+      alert(`${parent.firstName} and ${child.firstName} are family.`);
+      router.refresh();
+      close();
     } catch (e: any) {
-      console.log(e);
       alert(e.message);
     }
   }
 
   return (
     <>
-      <Button variant="outlined" color="neutral" onClick={() => setOpen(true)} data-testid="test-add-child">
+      <Button onClick={open}>
         Add Child
       </Button>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog>
-          <AddPersonForm omitFields={["deathDate"]} onCreate={addChild} onClose={() => setOpen(false)} />
-        </ModalDialog>
+      <Modal
+        role="dialog"
+        title="New person"
+        opened={opened}
+        onClose={close}
+        withCloseButton={isSmallDevice}
+        fullScreen={isSmallDevice}
+        transitionProps={{ transition: "slide-left", duration: 400 }}
+      >
+        <AddPersonForm omitFields={["nameDate"]} onCreate={childCreated} />
       </Modal>
     </>
   );
 }
 
 export function LinkChild({parent}: {parent: Person}) {
-  const [open, setOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const isSmallDevice = useMediaQuery("(max-width: 50em)");
   const router = useRouter();
 
   async function linkChild(child: Person) {
     try {
       await createParentage(parent.id, child.id);
       alert(`${parent.firstName} and ${child.firstName} are family.`);
-
       router.refresh();
-      setOpen(false);
+      close();
     } catch (e: any) {
-      console.log(e);
       alert(e.message);
     }
   }
 
   return (
     <>
-      <Button variant="outlined" color="neutral" onClick={() => setOpen(true)}>
+      <Button onClick={open}>
         Link Child
       </Button>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog sx={{minHeight: 400}}>
-          <SuggestChildren parent={parent} onPersonClick={linkChild} />
-        </ModalDialog>
+      <Modal
+        role="dialog"
+        title="Find child"
+        opened={opened}
+        onClose={close}
+        withCloseButton={isSmallDevice}
+        fullScreen={isSmallDevice}
+        transitionProps={{ transition: "slide-left", duration: 400 }}
+      >
+        <SuggestChildren parent={parent} onPersonClick={linkChild} />
       </Modal>
     </>
   );
@@ -102,22 +104,35 @@ export function LinkChild({parent}: {parent: Person}) {
 export function UnlinkChild({parentage}: {parentage: Parentage}) {
   const router = useRouter();
 
+  function confirmDelete() {
+    modals.openConfirmModal({
+      title: "Delete parent-child relation",
+      withCloseButton: false,
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete child relation with {parentage.child.firstName}?
+        </Text>
+      ),
+      labels: { confirm: "Yes", cancel: "No" },
+      confirmProps: { color: "red" },
+      onConfirm: () => unlinkChild()
+    });
+  }
+
   async function unlinkChild() {
-    if (confirm(`Delete child relation with ${parentage.child.firstName}?`)) {
-      try {
-        await deleteRel(parentage.id);
-        router.refresh();
-      } catch (e: any) {
-        console.log(e);
-        alert(e.message);
-      }
+    try {
+      await deleteRel(parentage.id);
+      router.refresh();
+    } catch (e: any) {
+      console.log(e);
+      alert(e.message);
     }
   }
 
   return (
-    <IconButton aria-label="Delete child" onClick={() => unlinkChild()}>
-      <LinkOffOutlinedIcon />
-    </IconButton>
+    <ActionIcon aria-label="Delete" onClick={confirmDelete} variant="transparent">
+      <IconTrash />
+    </ActionIcon>
   )
 }
 
@@ -159,27 +174,24 @@ export function SuggestChildren({
 
   return (
     <>
-      <FormControl>
-        <Input
-          id="query"
-          onChange={(e) => { queryChanged(e.target.value) }}
-          defaultValue={parent.surname}
-        />
-      </FormControl>
-
+      <TextInput
+        id="query"
+        onChange={(e) => { queryChanged(e.target.value) }}
+        defaultValue={query}
+      />
       <Table>
-        <tbody>
+        <Table.Tbody>
         {persons?.map((p) => (
-          <tr key={p.id}>
-            <td>
-              <Link onClick={() => onPersonClick({...p})}>
-                {p.name ?? (p.surname + p.firstName)}
-              </Link>
-            </td>
-            <td>{dayjs(p.birthDate).format("ll")}</td>
-          </tr>
+          <Table.Tr key={p.id}>
+            <Table.Td>
+              <Anchor onClick={() => onPersonClick({...p})}>
+                {p.name}
+              </Anchor>
+            </Table.Td>
+            <Table.Td>{dayjs(p.birthDate).format("ll")}</Table.Td>
+          </Table.Tr>
         ))}
-        </tbody>
+        </Table.Tbody>
       </Table>
     </>
   );

@@ -7,63 +7,31 @@ import { Parentage, type Marriage, type Person } from "@/lib/actions/types";
 import testData from "@/lib/test-data.json"
 
 const test = base.extend({
-  testPerson: {
-    ...testData.testedPerson,
-    sex: testData.testedPerson.sex as "Man" | "Woman",
-    birthDate: new Date(testData.testedPerson.birthDate)
-  },
+  testPerson: testData.testedPerson as Person,
   marriages: testData.testedPerson.marriages.map((rel) => {
     return {
       id: rel.id,
-      beginDate: new Date(rel.beginDate),
-      wife: {
-        ...rel.wife,
-        sex: rel.wife.sex as "Man" | "Woman",
-        birthDate: new Date(rel.wife.birthDate)
-      },
-      husband: {
-        ...testData.testedPerson,
-        sex: testData.testedPerson.sex as "Man" | "Woman",
-        birthDate: new Date(testData.testedPerson.birthDate)
-      }
-    }
+      beginDate: rel.beginDate,
+      wife: rel.wife,
+      husband: testData.testedPerson,
+    } as Marriage
   }),
   children: testData.testedPerson.children.map((p) => {
     return {
       id: `rel-${p.id}`,
-      child: {
-        ...p,
-        sex: p.sex as "Man" | "Woman",
-        birthDate: new Date(p.birthDate)
-      },
-      parent: {
-        ...testData.testedPerson,
-        sex: testData.testedPerson.sex as "Man" | "Woman",
-        birthDate: new Date(testData.testedPerson.birthDate)
-      }
-    }
+      child: p,
+      parent: testData.testedPerson,
+    } as Parentage
   }),
   parents: testData.testedPerson.parents.map((p) => {
     return {
       id: `rel-${p.id}`,
-      parent: {
-        ...p,
-        sex: p.sex as "Man" | "Woman",
-        birthDate: new Date(p.birthDate)
-      },
-      child: {
-        ...testData.testedPerson,
-        sex: testData.testedPerson.sex as "Man" | "Woman",
-        birthDate: new Date(testData.testedPerson.birthDate)
-      }
-    }
+      parent: p,
+      child: testData.testedPerson,
+    } as Parentage
   }),
   siblings: testData.testedPerson.siblings.map((p) => {
-    return {
-      ...p,
-      sex: p.sex as "Man" | "Woman",
-      birthDate: new Date(p.birthDate)
-    }
+    return p as Person
   })
 });
 
@@ -86,20 +54,20 @@ beforeEach(() => {
 
 describe("Lists of relatives", () => {
 
-  describe("Spouses", () => {
-    test("should render list of spouses", ({testPerson, marriages}) => {
+  describe("Marriages", () => {
+    test("should render list of marriages", ({testPerson, marriages}) => {
       // Need to figure it out why vitest creates union for array properties
       const marriages_ = Array.isArray(marriages) ? marriages : [marriages];
       render(<Marriages person={testPerson} records={marriages_} />);
 
-      expect(screen.getByRole("table", { name: /spouses/i })).toBeInTheDocument();
+      expect(screen.getByRole("table", { name: /marriages/i })).toBeInTheDocument();
 
       marriages_.forEach((value: Marriage) => {
         expect(screen.getByRole("row", { name: new RegExp(value.wife.firstName) })).toBeInTheDocument();
         expect(screen.getByRole("link", { name: new RegExp(value.wife.firstName) })).toBeInTheDocument();
       })
 
-      expect(screen.getAllByRole("button", { name: /delete relationship/i }).length).equals(marriages_.length);
+      expect(screen.getAllByRole("button", { name: /delete/i }).length).equals(marriages_.length);
     });
   });
 
@@ -115,7 +83,7 @@ describe("Lists of relatives", () => {
         expect(screen.getByRole("link", { name: new RegExp(value.child.firstName) })).toBeInTheDocument();
       })
 
-      expect(screen.getAllByRole("button", { name: /delete child/i }).length).equals(children_.length);
+      expect(screen.getAllByRole("button", { name: /delete/i }).length).equals(children_.length);
     });
   });
 
@@ -174,7 +142,7 @@ describe("Lists of relatives", () => {
         </>
       );
 
-      expect(screen.getByRole("table", { name: /spouses/i })).toBeInTheDocument();
+      expect(screen.getByRole("table", { name: /marriages/i })).toBeInTheDocument();
       expect(screen.getByRole("table", { name: /children/i })).toBeInTheDocument();
       expect(screen.getByRole("table", { name: /parents/i })).toBeInTheDocument();
       expect(screen.getByRole("table", { name: /siblings/i })).toBeInTheDocument();

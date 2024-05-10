@@ -1,6 +1,6 @@
 "use server"
 
-import AddPerson from "@/components/people/addPersonButton";
+import AddPerson from "@/components/people/buttons/person";
 import Pagination from "@/components/people/pagination";
 import Search from "@/components/people/search";
 import Table from "@/components/people/table";
@@ -27,8 +27,8 @@ export default async function Page({
     <div style={{display: "flex", flexDirection: "column", height: "100%"}}>
 
       <Breadcrumbs m="md">
-        <Anchor key="home" href="/" size="lg">Home</Anchor>
-        <Text size="lg">People</Text>
+        <Anchor key="home" href="/">Home</Anchor>
+        <Text>People</Text>
       </Breadcrumbs>
 
       <Group justify="space-around">

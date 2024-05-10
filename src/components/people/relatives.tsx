@@ -46,14 +46,8 @@ export function Marriages({person, records}: {person: Person, records: Marriage[
   ));
   return (
     <>
-      <Text size="lg">
-        Marriages
-        <Group>
-          <Anchor href="">[+]</Anchor>
-          <Anchor href="">[~]</Anchor>
-        </Group>
-      </Text>
       <Table captionSide="top">
+        <Table.Caption style={{fontWeight: "bold", textAlign: "left"}}>Marriages</Table.Caption>
         <Table.Tbody>{rows}</Table.Tbody>
         <Table.Tfoot>
           <Table.Tr>

@@ -6,7 +6,11 @@ describe("Home page", () => {
 
   test("renders open buttons", () => {
     render(<Page />);
-    expect(screen.getByRole("button", { name: /open/i })).toBeInTheDocument();
-  });
 
+    const buttons = screen.getAllByRole("link", { name: /open/i });
+
+    expect(buttons.length).toEqual(2);
+    expect(buttons[0].getAttribute("href")).toEqual("/people");
+    expect(buttons[1].getAttribute("href")).toEqual("/calendar");
+  });
 });

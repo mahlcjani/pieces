@@ -1,10 +1,9 @@
 "use client"
 
-import { AddPersonForm } from "../addPerson";
+import { AddPersonForm } from "../person";
 import { Marriage, type Person } from "@/lib/actions/types";
 import {
   createMarriage,
-  createPerson,
   deleteRel,
   suggestSpouses,
   updateMarriage,
@@ -14,27 +13,22 @@ import dayjs from "@/lib/dayjs";
 
 import {
   ActionIcon,
+  Anchor,
   Button,
   Divider,
   Group,
-  Input,
   Modal,
   Select,
   Stack,
-  Text
+  Table,
+  Text,
+  TextInput
 } from "@mantine/core";
 
 
 import { DatePickerInput } from "@mantine/dates";
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
-
-
-import {
-  IconButton,
-  Link,
-  Table
-} from "@mui/joy";
 
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 
@@ -47,21 +41,12 @@ export function AddSpouse({person}: {person: Person}) {
   const isSmallDevice = useMediaQuery("(max-width: 50em)");
   const router = useRouter();
 
-  async function addSpouse(formData: FormData) {
+  async function spouseCreated(spouse: Person) {
     try {
-      const spouse: Person|undefined = await createPerson(
-        person.sex == "Man" ? "Woman" : "Man",
-        formData
-      );
-      if (spouse) {
-        alert(`Person (${spouse.name}) record saved.`);
-
-        await createMarriage(person.id, spouse.id, new FormData());
-        alert(`${person.firstName} and ${spouse.firstName} are family.`);
-
-        router.refresh();
-        close();
-      }
+      await createMarriage(person.id, spouse.id, new FormData());
+      alert(`${person.firstName} and ${spouse.firstName} are family.`);
+      router.refresh();
+      close();
     } catch (e: any) {
       console.log(e);
       alert(e.message);
@@ -70,18 +55,20 @@ export function AddSpouse({person}: {person: Person}) {
 
   return (
     <>
-      <Button variant="outlined" color="neutral" onClick={open}>
+      <Button onClick={open}>
         Add Spouse
       </Button>
       <Modal
+        role="dialog"
         title="New person"
         opened={opened}
         onClose={close}
+        withinPortal={false}
         withCloseButton={isSmallDevice}
         fullScreen={isSmallDevice}
         transitionProps={{ transition: "slide-left", duration: 400 }}
       >
-        <AddPersonForm omitFields={["sex"]} onCreate={addSpouse} />
+        <AddPersonForm sex={person.sex == "Man" ? "Woman" : "Man"} omitFields={["nameDate"]} onCreate={spouseCreated} />
       </Modal>
     </>
   );
@@ -96,7 +83,6 @@ export function LinkSpouse({person}: {person: Person}) {
     try {
       await createMarriage(person.id, spouse.id, new FormData());
       alert(`${person.firstName} and ${spouse.firstName} are family.`);
-
       router.refresh();
       close();
     } catch (e: any) {
@@ -107,10 +93,11 @@ export function LinkSpouse({person}: {person: Person}) {
 
   return (
     <>
-      <Button variant="outlined" color="neutral" onClick={open}>
+      <Button onClick={open}>
         Link Spouse
       </Button>
       <Modal
+        role="dialog"
         title="Find spouse"
         opened={opened}
         onClose={close}
@@ -119,12 +106,6 @@ export function LinkSpouse({person}: {person: Person}) {
         transitionProps={{ transition: "slide-left", duration: 400 }}
       >
         <SuggestSpouses person={person} onPersonClick={linkSpouse} />
-        <Divider />
-        <Group>
-          <Button onClick={close}>
-            Close
-          </Button>
-        </Group>
       </Modal>
     </>
   );
@@ -149,13 +130,13 @@ export function UnlinkSpouse({person, marriage}: {person: Person, marriage: Marr
   }
 
   async function unlinkSpouse() {
-      try {
-        await deleteRel(marriage.id);
-        router.refresh();
-      } catch (e: any) {
-        console.log(e);
-        alert(e.message);
-      }
+    try {
+      await deleteRel(marriage.id);
+      router.refresh();
+    } catch (e: any) {
+      console.log(e);
+      alert(e.message);
+    }
   }
 
   return (
@@ -272,25 +253,24 @@ export function SuggestSpouses({
 
   return (
     <>
-      <Input
+      <TextInput
         id="query"
         onChange={(e) => { queryChanged(e.target.value) }}
         value={query}
       />
-
       <Table>
-        <tbody>
+        <Table.Tbody>
         {persons?.map((p) => (
-          <tr key={p.id}>
-            <td>
-              <Link onClick={() => onPersonClick({...p})}>
+          <Table.Tr key={p.id}>
+            <Table.Td>
+              <Anchor onClick={() => onPersonClick({...p})}>
                 {p.name}
-              </Link>
-            </td>
-            <td>{dayjs(p.birthDate).format("ll")}</td>
-          </tr>
+              </Anchor>
+            </Table.Td>
+            <Table.Td>{dayjs(p.birthDate).format("ll")}</Table.Td>
+          </Table.Tr>
         ))}
-        </tbody>
+        </Table.Tbody>
       </Table>
     </>
   );

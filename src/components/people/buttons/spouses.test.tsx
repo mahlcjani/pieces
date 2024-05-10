@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { render, screen, userEvent, fireEvent } from "@/lib/test-utils";
 
 import { AddSpouse, LinkSpouse } from "./spouses";
+import { Person } from "@/lib/actions/types";
+
 import testData from "@/lib/test-data.json"
 
 beforeEach(() => {
@@ -17,11 +19,7 @@ beforeEach(() => {
 
 describe("Spouses buttons", () => {
 
-  const person = {
-    ...testData.testedPerson,
-    sex: testData.testedPerson.sex as "Man" | "Woman",
-    birthDate: new Date(testData.testedPerson.birthDate)
-  };
+  const person = testData.testedPerson as Person;
 
   describe("AddSpouse", () => {
     test("should render 'Add Spouse' button and open modal dialog", async () => {

@@ -1,6 +1,6 @@
 "use server"
 
-import ShowEditPerson from "@/components/people/person";
+import { ShowEditPerson } from "@/components/people/person";
 
 import {
   Children,
@@ -21,7 +21,6 @@ import {
   Anchor,
   Breadcrumbs,
   Container,
-  NavLink,
   Tabs,
   // Workaround for nextjs issues with using Tabs.List, Tabs.Tab and Tabs.Panel
   TabsList, TabsPanel, TabsTab,
@@ -61,9 +60,9 @@ export default async function Person({
     <>
 
       <Breadcrumbs m="md">
-        <Anchor key="home" href="/" size="lg">Home</Anchor>
-        <Anchor key="people" href={`/people?query=${query}&page=${page}`} size="lg">People</Anchor>
-        <Text size="lg">{person?.name}</Text>
+        <Anchor key="home" href="/">Home</Anchor>
+        <Anchor key="people" href={`/people?query=${query}&page=${page}`}>People</Anchor>
+        <Text>{person?.name}</Text>
       </Breadcrumbs>
 
       { person && (
