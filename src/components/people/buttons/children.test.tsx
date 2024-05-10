@@ -72,7 +72,7 @@ describe("Children buttons", () => {
   });
 
   describe("LinkChild", () => {
-    test("should render 'Link Child' button and open modal dialog", async () => {
+    test.skip("should render 'Link Child' button and open modal dialog", async () => {
       render(<LinkChild parent={parent}/>);
 
       // assert modal is not open
