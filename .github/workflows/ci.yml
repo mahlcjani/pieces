@@ -53,6 +53,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
+      - name: Build pieces
+        run: |
+          nix-shell --run "npm run build"
+      - name: Start neo4j
+        run: |
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
       - name: Run component tests
         run: |
           nix-shell --run "npx cypress run --reporter json --reporter-options output=cypress/test-results/e2e.json"
