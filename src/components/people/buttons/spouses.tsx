@@ -63,7 +63,7 @@ export function AddSpouse({person}: {person: Person}) {
         title="New person"
         opened={opened}
         onClose={close}
-        withinPortal={false}
+        withinPortal={true}
         withCloseButton={isSmallDevice}
         fullScreen={isSmallDevice}
         transitionProps={{ transition: "slide-left", duration: 400 }}
