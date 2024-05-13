@@ -1,18 +1,14 @@
-import {
-  Breadcrumbs,
-  Link,
-  Typography,
-} from "@mui/joy";
 
-import AddPersonForm from "@/components/people/addPerson";
+import { AddPersonForm } from "@/components/people/person";
+import { Anchor, Breadcrumbs, Text } from "@mantine/core";
 
 export default async function Page() {
   return (
     <>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link href="/">Home</Link>
-        <Link href="/people/">People</Link>
-        <Typography>Add person...</Typography>
+      <Breadcrumbs m="sm">
+        <Anchor href="/">Home</Anchor>
+        <Anchor href="/people/">People</Anchor>
+        <Text>Add person...</Text>
       </Breadcrumbs>
       <AddPersonForm />
     </>

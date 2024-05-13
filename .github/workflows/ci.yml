@@ -1,7 +1,7 @@
-name: Post-Merge
+name: Build and test
 on:
   push:
-    branches: [ master ]
+    branches: [ master, wip ]
   pull_request:
     branches: [ master ]
 env:
@@ -47,3 +47,4 @@ jobs:
         with:
           name: api-test-report
           path: playwright/reports
+

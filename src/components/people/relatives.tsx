@@ -19,126 +19,123 @@ import {
   type Person
 } from "@/lib/actions/types";
 
-import dayjs from "@/lib/dayjs";
+import { formatDate } from "@/lib/utils";
 
-import {
-  ButtonGroup,
-  Link,
-  Table
-} from "@mui/joy";
+import { Anchor, Group, Table, Text } from "@mantine/core";
+
 
 export function Marriages({person, records}: {person: Person, records: Marriage[]}) {
+  const rows = records?.map((rel) => (
+    <Table.Tr key={rel.id}>
+      <Table.Td>
+        <Anchor href={`/people/${(person.sex === "Man" ? rel.wife : rel.husband).id}`}>
+          {(person.sex === "Man" ? rel.wife : rel.husband).firstName}
+        </Anchor>
+      </Table.Td>
+      <Table.Td>
+        {formatDate(rel.beginDate)} - {formatDate(rel.endDate)}
+      </Table.Td>
+      <Table.Td>
+        {rel.endCause}
+      </Table.Td>
+      <Table.Td style={{textAlign: "right"}}>
+        <EditMarriage person={person} marriage={rel} />
+        <UnlinkSpouse person={person} marriage={rel} />
+      </Table.Td>
+    </Table.Tr>
+  ));
   return (
-    <Table>
-      <caption style={{fontWeight: "bold", textAlign: "left"}}>
-        Spouses
-      </caption>
-      <tbody>
-      {records?.map((r) => (
-        <tr key={r.id}>
-          <td>
-            <Link href={`/people/${(person.sex === "Man" ? r.wife : r.husband).id}`}>
-              {(person.sex === "Man" ? r.wife : r.husband).firstName}
-            </Link>
-          </td>
-          <td>{dayjs(r.beginDate).format("LL")} - {dayjs(r.endDate).format("LL")}</td>
-          <td>{r.endCause}</td>
-          <td style={{textAlign: "right"}}>
-            <EditMarriage person={person} marriage={r} />
-            <UnlinkSpouse person={person} marriage={r} />
-          </td>
-        </tr>
-      ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colSpan={4}>
-            <ButtonGroup spacing={1}>
-              <AddSpouse person={person} />
-              <LinkSpouse person={person} />
-            </ButtonGroup>
-          </td>
-        </tr>
-      </tfoot>
-    </Table>
+    <>
+      <Table captionSide="top">
+        <Table.Caption style={{fontWeight: "bold", textAlign: "left"}}>Marriages</Table.Caption>
+        <Table.Tbody>{rows}</Table.Tbody>
+        <Table.Tfoot>
+          <Table.Tr>
+            <Table.Td colSpan={4}>
+              <Group gap={"sm"}>
+                <AddSpouse person={person} />
+                <LinkSpouse person={person} />
+              </Group>
+            </Table.Td>
+          </Table.Tr>
+        </Table.Tfoot>
+      </Table>
+    </>
   );
 }
 
 export function Children({person, records}: {person: Person, records: Parentage[]}) {
+  const rows = records?.map((rel) => (
+    <Table.Tr key={rel.id}>
+      <Table.Td>
+        <Anchor href={`/people/${rel.child.id}`}>
+          {rel.child.firstName}
+        </Anchor>
+      </Table.Td>
+      <Table.Td colSpan={2}>
+        {formatDate(rel.child.birthDate)} - {formatDate(rel.child.deathDate)}
+      </Table.Td>
+      <Table.Td style={{textAlign: "right"}}>
+        <UnlinkChild parentage={rel} />
+      </Table.Td>
+    </Table.Tr>
+  ));
   return (
-    <Table>
-      <caption style={{fontWeight: "bold", textAlign: "left"}}>
-        Children
-      </caption>
-      <tbody>
-      {records?.map((rel) => (
-        <tr key={rel.id}>
-          <td>
-            <Link href={`/people/${rel.child.id}`}>
-              {rel.child.firstName}
-            </Link>
-          </td>
-          <td colSpan={2}>{dayjs(rel.child.birthDate).format("LL")} - {dayjs(rel.child.deathDate).format("LL")}</td>
-          <td style={{textAlign: "right"}}>
-            <UnlinkChild parentage={rel} />
-          </td>
-        </tr>
-      ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colSpan={4}>
-            <ButtonGroup spacing={1}>
+    <Table captionSide="top">
+      <Table.Caption style={{fontWeight: "bold", textAlign: "left"}}>Children</Table.Caption>
+      <Table.Tbody>{rows}</Table.Tbody>
+      <Table.Tfoot>
+        <Table.Tr>
+          <Table.Td colSpan={4}>
+            <Group>
               <AddChild parent={person} />
               <LinkChild parent={person} />
-            </ButtonGroup>
-          </td>
-        </tr>
-      </tfoot>
+            </Group>
+          </Table.Td>
+        </Table.Tr>
+      </Table.Tfoot>
     </Table>
   );
 }
 
 export function Parents({person, records}: {person: Person, records: Parentage[]}) {
+  const rows = records?.map((rel) => (
+    <Table.Tr key={rel.id}>
+      <Table.Td>
+        <Anchor href={`/people/${rel.parent.id}`}>
+          {rel.parent.firstName}
+        </Anchor>
+      </Table.Td>
+      <Table.Td colSpan={3}>
+        {formatDate(rel.parent.birthDate)} - {formatDate(rel.parent.deathDate)}
+      </Table.Td>
+    </Table.Tr>
+  ));
   return (
-    <Table>
-      <caption style={{fontWeight: "bold", textAlign: "left"}}>
-        Parents
-      </caption>
-      <tbody>
-      {records?.map((rel) => (
-        <tr key={rel.id}>
-          <td>
-            <Link href={`/people/${rel.parent.id}`}>
-              {rel.parent.firstName}
-            </Link>
-          </td>
-          <td colSpan={3}>{dayjs(rel.parent.birthDate).format("LL")} - {dayjs(rel.parent.deathDate).format("LL")}</td>
-        </tr>
-      ))}
-      </tbody>
+    <Table captionSide="top">
+      <Table.Caption style={{fontWeight: "bold", textAlign: "left"}}>Parents</Table.Caption>
+      <Table.Tbody>{rows}</Table.Tbody>
     </Table>
   );
 }
 
 export function Siblings({person, siblings}: {person: Person, siblings: Person[]}) {
+  const rows = siblings?.map((p) => (
+    <Table.Tr key={p.id}>
+      <Table.Td>
+        <Anchor href={`/people/${p.id}`}>
+          {p.firstName}
+        </Anchor>
+      </Table.Td>
+      <Table.Td colSpan={3}>
+        {formatDate(p.birthDate)} - {formatDate(p.deathDate)}
+      </Table.Td>
+    </Table.Tr>
+  ));
   return (
-    <Table>
-      <caption style={{fontWeight: "bold", textAlign: "left"}}>
-        Siblings
-      </caption>
-      <tbody>
-      {siblings?.map((p) => (
-        <tr key={p.id}>
-          <td>
-            <Link href={`/people/${p.id}`}>
-              {p.firstName}
-            </Link>
-          </td>
-          <td colSpan={3}>{dayjs(p.birthDate).format("LL")} - {dayjs(p.deathDate).format("LL")}</td>
-        </tr>
-      ))}
-      </tbody>
+    <Table captionSide="top">
+      <Table.Caption style={{fontWeight: "bold", textAlign: "left"}}>Siblings</Table.Caption>
+      <Table.Tbody>{rows}</Table.Tbody>
     </Table>
   );
 }

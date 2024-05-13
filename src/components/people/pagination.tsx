@@ -1,28 +1,7 @@
 "use client";
 
-import { Pagination as PaginationImpl } from "rsuite";
-import { Pagination as MUIPagination } from "@mui/material";
-
+import { Pagination as MantinePagination } from "@mantine/core";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-
-
-
-/*
-const NavLink = React.forwardRef((props, ref) => {
-  const { href, active, eventKey, as, ...rest } = props;
-  return (
-    <Link
-      href={`${location.pathname}?page=${eventKey}`}
-      className={active ? "active" : null}
-      as={as}
-    >
-      <a ref={ref} {...rest} />
-    </Link>
-  );
-});
-*/
-
-
 
 export default function Pagination({ activePage, totalPages }: { activePage: number, totalPages: number }) {
   const pathname = usePathname();
@@ -40,14 +19,14 @@ export default function Pagination({ activePage, totalPages }: { activePage: num
   };
 
   return (
-    <>
-      <PaginationImpl
-        first prev next last ellipsis boundaryLinks
-        size="md" maxButtons={3}
-        linkAs={"button"}
-        total={totalPages} limit={1} activePage={activePage} onChangePage={setActivePage}
-      />
-      {/*<MUIPagination count={totalPages} page={activePage} onChange={handleChange} />*/}
-    </>
+    <MantinePagination
+      withControls={true}
+      withEdges={true}
+      total={totalPages}
+      value={activePage}
+      onChange={setActivePage}
+      size="sm"
+      mt="sm"
+    />
   );
 }

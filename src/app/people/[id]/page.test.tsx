@@ -10,7 +10,7 @@ const person: Person = {
   firstName: "Joe",
   surname: "Doe",
   name: "Joe Doe",
-  birthDate: new Date("1981-01-01")
+  birthDate: "1981-01-01"
 };
 
 beforeEach(() => {

@@ -1,12 +1,7 @@
 
 import { fetchPeople } from "@/lib/actions/people";
-import { List, ListItem, ListItemButton, ListItemContent, Table, Typography } from "@mui/joy";
-
-import dayjs from "@/lib/dayjs";
-
-function formatDate(date: Date | string | undefined) {
-  return date ? dayjs(date).format("ll") : "";
-}
+import { formatDate } from "@/lib/utils";
+import { Card, Text } from "@mantine/core";
 
 export default async function PeopleTable({
   query,
@@ -19,20 +14,18 @@ export default async function PeopleTable({
 }) {
   const people = await fetchPeople(query, (currentPage-1) * pageSize, pageSize);
   return (
-    <List>
+    <>
       {people?.map((person) => (
-        <ListItem key={person.id}>
-          <ListItemButton component="a" href={`/people/${person.id}?query=${query}&page=${currentPage}`}>
-            <ListItemContent>
-              <Typography level="title-md">{person.name}</Typography>
-              <Typography level="body-sm">
-                {person.surname}, {person.firstName} <br />
-                {formatDate(person.birthDate)} - {formatDate(person.deathDate)}
-              </Typography>
-            </ListItemContent>
-          </ListItemButton>
-        </ListItem>
+        <Card
+          key={person.id}
+          component="a" href={`/people/${person.id}?query=${query}&page=${currentPage}`}
+          padding="sm"
+        >
+          <Text size="md">{person.name}</Text>
+          <Text size="sm">{person.surname}, {person.firstName}</Text>
+          <Text size="sm">{formatDate(person.birthDate)} - {formatDate(person.deathDate)}</Text>
+        </Card>
       ))}
-    </List>
+    </>
   );
 }

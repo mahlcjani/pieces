@@ -2,8 +2,7 @@
 
 import { type Anniversary } from "@/lib/actions/types";
 import { fetchEvents } from "@/lib/actions/calendar";
-
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 import {
   EventContentArg,
@@ -15,13 +14,7 @@ import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import plLocale from "@fullcalendar/core/locales/pl";
 
-import {
-  Badge,
-  Breadcrumbs,
-  Link,
-  Stack,
-  Typography
-} from "@mui/joy";
+import { Anchor, Badge, Breadcrumbs, Group, Indicator, Text } from "@mantine/core";
 
 import Image from "next/image";
 
@@ -48,28 +41,26 @@ export default function Calendar() {
     }
 
   function badgeColor(e: Anniversary) {
-    return e.people.some(p => p.deathDate !== undefined) ? "warning" : "primary";
+    return e.people.some(p => p.deathDate !== undefined) ? "gray" : "blue";
   }
 
   function renderEventContent({event}: EventContentArg) {
     const e: Anniversary = event.extendedProps?.data;
     return (
-      <Stack direction="row" spacing={1.5}>
-        <Badge badgeContent={e.cardinality} color={badgeColor(e)} max={999}>
+      <Group>
+        <Indicator inline disabled={e.cardinality === 0} label={e.cardinality} withBorder size={28} color={badgeColor(e)}>
           <Image alt={e.type} src={"/events/" + e.type.toLocaleLowerCase() + "-24.png"} width={24} height={24}/>
-        </Badge>
+        </Indicator>
         <div>{e.people.map(p => p.firstName).join("+")}</div>
-      </Stack>
+      </Group>
     )
   }
 
   return (
     <>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link href="/">
-          Home
-        </Link>
-        <Typography>Calendar</Typography>
+      <Breadcrumbs m="md">
+        <Anchor key="home" href="/">Home</Anchor>
+        <Text>Calendar</Text>
       </Breadcrumbs>
 
       <FullCalendar

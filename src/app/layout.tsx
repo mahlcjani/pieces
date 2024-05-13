@@ -1,18 +1,13 @@
+import { createTheme, MantineProvider, ColorSchemeScript } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
 
-import { CssVarsProvider } from "@mui/joy/styles";
-import { Divider } from "@mui/joy";
 import "@fontsource/inter";
-import "rsuite/dist/rsuite-no-reset.min.css";
-import "./globals.css";
-
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
-
-import { createTheme, MantineProvider } from '@mantine/core';
-import { ColorSchemeScript } from '@mantine/core';
+import "./globals.css";
 
 const theme = createTheme({
-
+  fontFamily: "Inter"
 });
 
 export default function RootLayout({children}: { children: React.ReactNode }) {
@@ -24,19 +19,11 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
         <ColorSchemeScript />
       </head>
       <body>
-        <CssVarsProvider>
-          <MantineProvider theme={theme}>
-            <div style={{display: "flex", flexDirection: "column", height: "100svh"}}>
-              <div style={{flex: 1}}>
-              {children}
-              </div>
-              <div style={{textAlign: "center"}}>
-                <Divider />
-                Uicons by <a href="https://www.flaticon.com/uicons">Flaticon</a>
-              </div>
-            </div>
-          </MantineProvider>
-        </CssVarsProvider>
+        <MantineProvider theme={theme}>
+          <ModalsProvider>
+            {children}
+          </ModalsProvider>
+        </MantineProvider>
       </body>
     </html>
   );

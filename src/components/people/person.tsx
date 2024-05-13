@@ -1,26 +1,28 @@
 "use client"
 
 import { type Person } from "@/lib/actions/types";
-import { updatePerson } from "@/lib/actions/people";
+import { createPerson, updatePerson } from "@/lib/actions/people";
 import { formatString4Form } from "@/lib/utils";
-
-import { DatePickerInput } from '@mantine/dates';
-import { Input } from "@mantine/core";
-
-import styles from "../people.module.css";
 
 import {
   Button,
-  ButtonGroup,
   Divider,
+  Group,
+  Select,
   Stack,
-} from "@mui/joy";
+  TextInput
+} from "@mantine/core";
 
-import dayjs from "dayjs";
+import { DatePickerInput } from '@mantine/dates';
+
+import dayjs from "@/lib/dayjs";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function ShowEditPerson({
+import styles from "../people.module.css";
+
+export function ShowEditPerson({
   id,
   props
 }: {
@@ -95,53 +97,49 @@ export default function ShowEditPerson({
   }
 
   return (
-    <form>
-      <Stack spacing={1}>
+    <form data-testid="person-form">
+      <Stack>
         <label className={styles.formControl}>
           <div className={styles.label}>First name</div>
-          <Input
+          <TextInput
             name="firstName"
             value={firstName}
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             onChange={(event) => setFirstName(event.target.value)}
             className={styles.control}
-            size="md"
           />
         </label>
         <label className={styles.formControl}>
           <div className={styles.label}>Surname</div>
-          <Input
+          <TextInput
             name="surname"
             value={surname}
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             onChange={(event) => setSurname(event.target.value)}
             className={styles.control}
-            size="md"
           />
         </label>
         <label className={styles.formControl}>
           <div className={styles.label}>Name</div>
-          <Input
+          <TextInput
             name="name"
             value={name}
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             onChange={(event) => updateName(event.target.value)}
             className={styles.control}
-            size="md"
           />
         </label>
         <label className={styles.formControl}>
           <div className={styles.label}>Birth name</div>
-          <Input
+          <TextInput
             name="birthName"
             defaultValue={props.birthName}
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             className={styles.control}
-            size="md"
           />
         </label>
         <label className={styles.formControl}>
@@ -152,9 +150,8 @@ export default function ShowEditPerson({
             valueFormat="MMM D"
             readOnly={readOnly}
             clearable
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             className={styles.control}
-            size="md"
           />
         </label>
         <label className={styles.formControl}>
@@ -162,10 +159,10 @@ export default function ShowEditPerson({
           <DatePickerInput
             name="birthDate"
             defaultValue={props.birthDate ? dayjs(props.birthDate).toDate() : null}
+            valueFormat="ll"
             readOnly={readOnly}
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             className={styles.control}
-            size="md"
           />
         </label>
         <label className={styles.formControl}>
@@ -173,25 +170,155 @@ export default function ShowEditPerson({
           <DatePickerInput
             name="deathDate"
             defaultValue={props.deathDate ? dayjs(props.deathDate).toDate() : null}
+            valueFormat="ll"
             readOnly={readOnly}
             clearable
-            variant={readOnly ? "filled" : "default"}
+            variant={readOnly ? "unstyled" : "default"}
             className={styles.control}
-            size="md"
           />
         </label>
+
         <Divider />
-        <ButtonGroup>
+
+        <Group grow={true}>
           <Button disabled={!readOnly} onClick={() => { setReadOnly(false); }}>
             Edit
           </Button>
           <Button disabled={readOnly} type="submit" formAction={submitForm}>
             Update
           </Button>
-          <Button disabled={readOnly} onClick={() => { setReadOnly(true) }}>
+          <Button disabled={readOnly} type="reset" onClick={() => { setReadOnly(true) }}>
             Cancel
           </Button>
-        </ButtonGroup>
+        </Group>
+      </Stack>
+    </form>
+  );
+}
+
+export type AddPersonParams = {
+  sex?: string;
+  omitFields?: string[];
+  onCreate?: any;
+  onClose?: any;
+}
+
+export function AddPersonForm({sex, omitFields=[], onCreate, onClose}: AddPersonParams) {
+  const [firstName, setFirstName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [name, setName] = useState("");
+  const [namePattern, setNamePattern] = useState("${firstName} ${surname}");
+  const router = useRouter();
+
+  useEffect(() => {
+    setName(namePattern.replace("${firstName}", firstName).replace("${surname}", surname));
+  },[firstName, surname]);
+
+  function updateName(value: string) {
+    setNamePattern(value.replace(firstName, "${firstName}").replace(surname, "${surname}"));
+    setName(value);
+  }
+
+  async function submitForm(formData: FormData) {
+    try {
+      const person: Person|undefined = await createPerson(
+        formData.get("sex")?.toString() ?? "Man",
+        formData
+      );
+      if (person !== undefined) {
+        alert(`Person (${person.name}) record saved.`);
+        if (onCreate) {
+          onCreate(person);
+        } else {
+          router.replace(`/people/${person.id}`);
+        }
+      }
+    } catch (e: any) {
+      console.log(e);
+      alert(e.message);
+    }
+  }
+
+  return (
+    <form data-testid="add-person-form">
+      <Stack>
+      { sex && (
+        <input type="hidden" name="sex" value={sex} />
+      )}
+      { !sex && (
+        <Select
+          name="sex"
+          label="Sex"
+          required
+          data={[
+            { value: "Man", label: "Man" },
+            { value: "Woman", label: "Woman" },
+          ]}
+          checkIconPosition="left"
+        />
+      )}
+        <TextInput
+          name="firstName"
+          label="First name"
+          value={firstName}
+          required
+          onChange={(event) => setFirstName(event.target.value)}
+        />
+        <TextInput
+          name="surname"
+          label="Surname"
+          value={surname}
+          required
+          onChange={(event) => setSurname(event.target.value)}
+        />
+        <TextInput
+          name="name"
+          label="Name"
+          value={name}
+          required
+          onChange={(event) => updateName(event.target.value)}
+        />
+      { !omitFields.includes("birthName") && (
+        <TextInput
+          name="birthName"
+          label="Birth name"
+        />
+      )}
+      { !omitFields.includes("nameDate") && (
+        <DatePickerInput
+          name="nameDate"
+          label="Name date"
+          valueFormat="MMM D"
+          clearable
+        />
+      )}
+        <DatePickerInput
+          name="birthDate"
+          label="Birth date"
+          dropdownType="modal"
+          required
+        />
+      { !omitFields.includes("deathDate") && (
+        <DatePickerInput
+          name="deathDate"
+          label="Death date"
+          valueFormat="ll"
+          clearable
+        />
+      )}
+
+        <Divider />
+
+        <Group>
+          <Button type="submit" formAction={submitForm}>
+            Create
+          </Button>
+          { onClose && (
+          <Button formAction={onClose}>
+            Close
+          </Button>
+          )}
+        </Group>
       </Stack>
     </form>
   );

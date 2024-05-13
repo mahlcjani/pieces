@@ -1,6 +1,6 @@
 "use server"
 
-import ShowEditPerson from "@/components/people/person";
+import { ShowEditPerson } from "@/components/people/person";
 
 import {
   Children,
@@ -18,16 +18,14 @@ import {
 } from "@/lib/actions/people";
 
 import {
+  Anchor,
   Breadcrumbs,
-  Link,
-  Stack,
-  Typography,
+  Container,
   Tabs,
-  TabList,
-  Tab,
-  TabPanel,
-  Divider
-} from "@mui/joy";
+  // Workaround for nextjs issues with using Tabs.List, Tabs.Tab and Tabs.Panel
+  TabsList, TabsPanel, TabsTab,
+  Text
+} from '@mantine/core';
 
 type Params = {
   id: string;
@@ -58,59 +56,57 @@ export default async function Person({
     fetchSiblings(id)
   ]);
 
-  console.log(person);
-
   return (
     <>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link href="/">Home</Link>
-        <Link href={`/people?query=${query}&page=${page}`}>People</Link>
-        <Typography>{person?.name}</Typography>
+
+      <Breadcrumbs m="md">
+        <Anchor key="home" href="/">Home</Anchor>
+        <Anchor key="people" href={`/people?query=${query}&page=${page}`}>People</Anchor>
+        <Text>{person?.name}</Text>
       </Breadcrumbs>
 
       { person && (
-        <Tabs aria-label="Person info" defaultValue={0}>
-          <TabList >
-            <Tab>Personal data</Tab>
-            <Tab>Family</Tab>
-            <Tab>Social</Tab>
-          </TabList>
-          <TabPanel value={0}>
-            <ShowEditPerson
-              id={person.id}
-              props={{
-                name: person.name,
-                firstName: person.firstName,
-                surname: person.surname,
-                birthDate: person.birthDate,
-                birthName: person.birthName,
-                deathDate: person.deathDate,
-                nameDate: person.nameDate
-              }}
-            />
-          </TabPanel>
-          <TabPanel value={1}>
-            <Stack spacing={1.5}>
+        <Tabs aria-label="Person info" defaultValue="personalia">
+          <TabsList grow={true}>
+            <TabsTab value="personalia">Personal data</TabsTab>
+            <TabsTab value="family">Family</TabsTab>
+            <TabsTab value="social" disabled>Social</TabsTab>
+          </TabsList>
+          <TabsPanel value="personalia">
+            <Container fluid mt="md">
+              <ShowEditPerson
+                id={person.id}
+                props={{
+                  name: person.name,
+                  firstName: person.firstName,
+                  surname: person.surname,
+                  birthDate: person.birthDate,
+                  birthName: person.birthName,
+                  deathDate: person.deathDate,
+                  nameDate: person.nameDate
+                }}
+              />
+            </Container>
+          </TabsPanel>
+          <TabsPanel value="family">
               <Marriages person={person} records={marriages} />
-              <Divider />
               <Children person={person} records={children} />
               { parents.length > 0 && (
                 <>
-                  <Divider />
                   <Parents person={person} records={parents} />
                 </>
               )}
               { siblings.length > 0 && (
                 <>
-                  <Divider />
                   <Siblings person={person} siblings={siblings} />
                 </>
               )}
-            </Stack>
-          </TabPanel>
-          <TabPanel value={2}>
-            Later
-          </TabPanel>
+          </TabsPanel>
+          <TabsPanel value="social">
+            <Container fluid mt="md">
+              Later
+            </Container>
+          </TabsPanel>
         </Tabs>
       )}
     </>
