@@ -30,5 +30,5 @@ For tests I use:
 
 # Continues integration
 
-I use [Github Actions](https://docs.github.com/en/actions) for basic validation.
+I use [GitHub Actions](https://docs.github.com/en/actions) for basic validation.
 
