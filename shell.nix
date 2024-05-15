@@ -11,8 +11,6 @@ mkShellNoCC {
     shellHook = ''
         echo Updating packages...
         npm install
-#        npx playwright install
-#        npx playwright install-deps
-    ''; 
+    '';
 }
 

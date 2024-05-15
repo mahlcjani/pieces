@@ -1,7 +1,7 @@
 
 describe("Home page", () => {
   it("Opens and renders nav", () => {
-    cy.visit("http://localhost:3000");
+    cy.visit("/");
 
     cy.contains("People");
     cy.get("a[href*='/people']").should("have.attr", "href", "/people");

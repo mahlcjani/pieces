@@ -1,22 +1,5 @@
 import { test, APIRequestContext } from "@playwright/test";
 
-/*
-type AbstractPath = {
-  people?: {
-    person?: string;
-    marriages?: {
-      marriage?: string
-    };
-    children?: {
-      child?: string
-    };
-    parents?: {}
-    siblings?: {}
-  },
-  calendar: {}
-}
-*/
-
 export class API {
   readonly root = "/api/v1";
   readonly request: APIRequestContext;
@@ -30,16 +13,13 @@ export class API {
    * - primitive: number, string
    * - object
    *
-   * Properties are used to compose endpoint URL in sach a way that:
-   * - if primitive is defined its value appended to currently constructed path
+   * Properties are used to compose endpoint URL in such a way that:
+   * - if primitive is defined its value is appended to currently constructed path
    * - if the other property is defined its name is appended and the abstract
-   * path tree is traversed down. Examples:
-   * - { slug: "123" }
-   *   "/123" is appended and construction is stopped
-   * - { sub: {} }
-   *   "/sub" is appended and construction continues (it will be stopped shortly)
-   * - { slug: 123, sub: {}}
-   *   "/123/sub" is appended and construction continues
+   *   path tree is traversed down. Examples:
+   * - { slug: "123" }        - "/123"
+   * - { sub: {} }            - "/sub"
+   * - { slug: 123, sub: {}}  - "/123/sub"
    * - {
    *      pid: "123",
    *      next: {
@@ -84,13 +64,7 @@ export class API {
   }
 
   async get(path: any, params?: any): Promise<any> {
-try {
     return await this.request.get(this.endpoint(path), { params: params });
-} catch (e: any) {
-console.log(`GET ${this.endpoint(path)}`);
-console.log(e);
-    return await this.request.get(this.endpoint(path), { params: params });
-}
   }
 
   async delete(path: any, params?: any): Promise<any> {
@@ -119,7 +93,6 @@ console.log(e);
  */
 export const apiTest = test.extend<{api: API}>({
   api: async ({ request }, use) => {
-    const api = new API(request);
-    await use(api);
+    await use(new API(request));
   }
 });

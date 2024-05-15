@@ -55,7 +55,7 @@ export function AddSpouse({person}: {person: Person}) {
 
   return (
     <>
-      <Button onClick={open}>
+      <Button onClick={open} variant="light">
         Add Spouse
       </Button>
       <Modal
@@ -93,7 +93,7 @@ export function LinkSpouse({person}: {person: Person}) {
 
   return (
     <>
-      <Button onClick={open}>
+      <Button onClick={open} variant="light">
         Link Spouse
       </Button>
       <Modal
