@@ -61,7 +61,7 @@ jobs:
           bin/neo4j-init --script src/lib/data/kennedies.cypher
       - name: Run component tests
         run: |
-          nix-shell --run "npx cypress run --reporter json --reporter-options output=cypress/test-results/e2e.json"
+          nix-shell --run "npm start & npx cypress run"
       - name: Archive e2e tests results
         uses: actions/upload-artifact@v4
         if: ${{ always() && hashFiles('cypress/test-results/*') }}
