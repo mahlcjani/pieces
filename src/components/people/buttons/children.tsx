@@ -47,7 +47,7 @@ export function AddChild({parent}: {parent: Person}) {
 
   return (
     <>
-      <Button onClick={open}>
+      <Button onClick={open} variant="light">
         Add Child
       </Button>
       <Modal
@@ -83,7 +83,7 @@ export function LinkChild({parent}: {parent: Person}) {
 
   return (
     <>
-      <Button onClick={open}>
+      <Button onClick={open} variant="light">
         Link Child
       </Button>
       <Modal

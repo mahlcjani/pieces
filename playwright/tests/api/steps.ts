@@ -116,7 +116,6 @@ export class Steps {
 
 export const test = apiTest.extend<{steps: Steps}>({
   steps: async ({ api }, use) => {
-    const steps = new Steps(api);
-    await use(steps);
+    await use(new Steps(api));
   }
 });

@@ -55,7 +55,7 @@ export function AddSpouse({person}: {person: Person}) {
 
   return (
     <>
-      <Button onClick={open}>
+      <Button onClick={open} variant="light">
         Add Spouse
       </Button>
       <Modal
@@ -63,7 +63,7 @@ export function AddSpouse({person}: {person: Person}) {
         title="New person"
         opened={opened}
         onClose={close}
-        withinPortal={false}
+        withinPortal={true}
         withCloseButton={isSmallDevice}
         fullScreen={isSmallDevice}
         transitionProps={{ transition: "slide-left", duration: 400 }}
@@ -93,7 +93,7 @@ export function LinkSpouse({person}: {person: Person}) {
 
   return (
     <>
-      <Button onClick={open}>
+      <Button onClick={open} variant="light">
         Link Spouse
       </Button>
       <Modal

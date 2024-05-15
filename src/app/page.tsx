@@ -14,14 +14,14 @@ export default function Home() {
         <Title order={2}>People</Title>
         <Text>People directory.</Text>
         <Group>
-          <Button component="a" href="/people">Open</Button>
+          <Button component="a" href="/people" variant="light">Open</Button>
         </Group>
       </Card>
       <Card m="md" shadow="lg">
         <Title order={2}>Calendar</Title>
         <Text>Calendar of events derived from people's directory.</Text>
         <Group>
-          <Button component="a" href="/calendar">Open</Button>
+          <Button component="a" href="/calendar" variant="light">Open</Button>
         </Group>
       </Card>
       <Card m="md" shadow="lg">
