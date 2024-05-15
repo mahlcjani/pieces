@@ -17,7 +17,7 @@ jobs:
       - name: Run Vitest
         run: |
           nix-shell --run "npm run test"
-      - name: Archive component tests results
+      - name: Archive reports
         uses: actions/upload-artifact@v4
         if: ${{ always() && hashFiles('reports/*') }}
         with:
@@ -32,7 +32,7 @@ jobs:
       - name: Install Playwright
         run: |
           nix-shell --run "npx playwright install chromium --with-deps"
-      - name: Build pieces
+      - name: Build
         run: |
           nix-shell --run "npm run build"
       - name: Start neo4j
@@ -41,7 +41,7 @@ jobs:
       - name: Run Playwright
         run: |
           nix-shell --run "npx playwright test"
-      - name: Archive API tests results
+      - name: Archive reports
         uses: actions/upload-artifact@v4
         if: ${{ always() && hashFiles('playwright/reports/*') }}
         with:
@@ -53,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - name: Build pieces
+      - name: Build
         run: |
           nix-shell --run "npm run build"
       - name: Start neo4j
@@ -62,7 +62,7 @@ jobs:
       - name: Run Cypress
         run: |
           nix-shell --run "npm start & npx cypress run --browser firefox"
-      - name: Archive e2e tests results
+      - name: Archive reports
         uses: actions/upload-artifact@v4
         if: ${{ always() && hashFiles('cypress/test-results/*') }}
         with:
