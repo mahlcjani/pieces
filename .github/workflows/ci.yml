@@ -81,4 +81,4 @@ jobs:
           bin/neo4j-init --script src/lib/data/kennedies.cypher
       - name: Run k6
         run: |
-          nix-shell --run "npm start & k6 run k6/calendar.js"
+          nix-shell --run "npm start >/dev/null & k6 run k6/calendar.js"
