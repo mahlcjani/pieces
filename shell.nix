@@ -4,6 +4,7 @@ mkShellNoCC {
     packages = [
         act
         git
+        k6
         nodejs
         openssh
         vim
