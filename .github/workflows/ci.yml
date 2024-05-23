@@ -1,7 +1,6 @@
 name: Build and test
 on:
   push:
-    branches: [ master, wip ]
   pull_request:
     branches: [ master ]
 env:
@@ -68,3 +67,18 @@ jobs:
         with:
           name: e2e-test-report
           path: cypress/test-results
+  load-tests:
+    name: Load tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: Build
+        run: |
+          nix-shell --run "npm run build"
+      - name: Start neo4j
+        run: |
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
+      - name: Run k6
+        run: |
+          nix-shell --run "npm start >/dev/null & k6 run k6/calendar.js"
