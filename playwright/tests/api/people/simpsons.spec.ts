@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../steps";
-import simpsons from "./simpsons.json";
+import simpsons from "./simpsons.json" assert { type: "json" };
 
 test.use({
   locale: "en"

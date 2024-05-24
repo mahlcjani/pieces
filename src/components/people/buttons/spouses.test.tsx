@@ -4,7 +4,7 @@ import { render, screen, userEvent, fireEvent } from "@/lib/test-utils";
 import { AddSpouse, LinkSpouse } from "./spouses";
 import { Person } from "@/lib/actions/types";
 
-import testData from "@/lib/test-data.json"
+import testData from "@/lib/test-data.json" assert { type: "json" };
 
 beforeEach(() => {
   vi.mock("@/lib/actions/people", () => {

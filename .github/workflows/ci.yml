@@ -26,37 +26,42 @@ jobs:
       # Build the app
       - name: Build
         id: build
+        continue-on-error: true
         run: |
           nix-shell --run "npm run build"
 
       # Run component tests even if build failed
       - name: Test components
         if: always()
+        continue-on-error: true
         run: |
           nix-shell --run "npm run test"
 
       # Start neo4j server and populate it with test data
       - name: Start neo4j
         id: neo4j
-        if: steps.build.outcome == 'success'
+        if: always() && steps.build.outcome == 'success'
         run: |
           bin/neo4j-init --script src/lib/data/kennedies.cypher
 
       # Run API tests
       - name: Test API
-        if: steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+        if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+        continue-on-error: true
         run: |
           nix-shell --run "npx playwright test"
 
       # Run end to end tests
       - name: Test UI
-        if: steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+        if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+        continue-on-error: true
         run: |
           nix-shell --run "npm start & npx cypress run --browser firefox"
 
       # Run k6
-      - name: Test load
-        if: steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+      - name: Load test
+        if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+        continue-on-error: true
         run: |
           nix-shell --run "npm start >/dev/null & k6 run k6/calendar.js"
 

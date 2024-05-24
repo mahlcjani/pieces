@@ -4,7 +4,7 @@ import { render, screen, } from "@/lib/test-utils";
 import { Children, Parents, Siblings, Marriages } from "./relatives";
 import { Parentage, type Marriage, type Person } from "@/lib/actions/types";
 
-import testData from "@/lib/test-data.json"
+import testData from "@/lib/test-data.json" assert { type: "json" };
 
 const test = base.extend({
   testPerson: testData.testedPerson as Person,

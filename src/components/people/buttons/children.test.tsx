@@ -4,7 +4,7 @@ import { render, screen, userEvent } from "@/lib/test-utils";
 import { AddChild, LinkChild } from "./children";
 import { Person } from "@/lib/actions/types";
 
-import testData from "@/lib/test-data.json"
+import testData from "@/lib/test-data.json" assert { type: "json" };
 
 beforeEach(() => {
   vi.mock("@/lib/actions/people", () => {
