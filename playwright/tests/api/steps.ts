@@ -1,4 +1,4 @@
-import { expect } from "@playwright/test";
+import { APIResponse, expect } from "@playwright/test";
 import { API, apiTest } from "./api";
 
 /**
@@ -11,6 +11,13 @@ export class Steps {
     this.api = api;
   };
 
+  async json(response: APIResponse): Promise<any> {
+    const json = await response.json();
+    console.log(JSON.stringify(json, null, 2));
+    return json;
+  }
+
+
   async calendar(title: string, {since, until}: {since: Date|string, until: Date|string}): Promise<any> {
     return await test.step(title, async () => {
       const response = await this.api.get({calendar:{}}, {
@@ -18,7 +25,7 @@ export class Steps {
         "until": typeof until === "object" ? until.toJSON().substring(0,10) : until
       });
       expect(response.status()).toBe(200);
-      return await response.json();
+      return await this.json(response);
     });
   }
 
@@ -30,7 +37,7 @@ export class Steps {
         "offset": offset
       });
       expect(response.status()).toBe(200);
-      return await response.json();
+      return await this.json(response);
     });
   }
 
@@ -38,7 +45,7 @@ export class Steps {
     return await test.step(title, async () => {
       const response = await this.api.post({people:{}}, character);
       expect(response.status()).toBe(expectedStatus);
-      return await response.json();
+      return await this.json(response);
     });
   }
 
@@ -46,7 +53,7 @@ export class Steps {
     return await test.step(title, async () => {
       const response = await this.api.get({people: {person: id}});
       expect(response.status()).toBe(expectedStatus);
-      return await response.json();
+      return await this.json(response);
     });
   }
 
@@ -56,7 +63,7 @@ export class Steps {
         with: "marriages,children,parents,siblings"
       });
       expect(response.status()).toBe(expectedStatus);
-      return await response.json();
+      return await this.json(response);
     });
   }
 
@@ -71,7 +78,7 @@ export class Steps {
     return await test.step(title, async () => {
       const response = await this.api.get({people: {person: id, marriages: {}}});
       expect(response.status()).toBe(expectedStatus);
-      return await response.json();
+      return await this.json(response);
     });
   }
 
@@ -86,7 +93,7 @@ export class Steps {
     return await test.step(title, async () => {
       const response = await this.api.get({people: {person: id, children: {}}});
       expect(response.status()).toBe(expectedStatus);
-      return await response.json();
+      return await this.json(response);
     });
   }
 
@@ -101,7 +108,7 @@ export class Steps {
     return await test.step(title, async () => {
       const response = await this.api.get({people: {person: id, parents: {}}});
       expect(response.status()).toBe(expectedStatus);
-      return await response.json();
+      return await this.json(response);
     });
   }
 
@@ -109,7 +116,7 @@ export class Steps {
     return await test.step(title, async () => {
       const response = await this.api.get({people: {person: id, siblings: {}}});
       expect(response.status()).toBe(expectedStatus);
-      return await response.json();
+      return await this.json(response);
     });
   }
 }
