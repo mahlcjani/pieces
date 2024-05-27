@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../steps";
-import simpsons from "./simpsons.json";
+import simpsons from "./simpsons.json" assert { type: "json" };
 
 test.use({
   locale: "en"
@@ -58,7 +58,13 @@ test("should be able to create the Simpsons'", async ({ steps }) => {
     );
   };
 
-  const assertPerson = (person: any, wifes: any[], husbands: any[], children: any[], parents: any[], siblings: any[]) => {
+  const assertPerson = (person: any, { wifes=[], husbands=[], children=[], parents=[], siblings=[] }: {
+      wifes?: any[];
+      husbands?: any[];
+      children?: any[];
+      parents?: any[];
+      siblings?: any[];
+  }) => {
     expect(person.marriages).toHaveLength(wifes.length + husbands.length);
     expect(person.marriages).toEqual(
       expect.arrayContaining(
@@ -118,11 +124,11 @@ test("should be able to create the Simpsons'", async ({ steps }) => {
   await assertChildLinked(marge, lisa),
   await assertChildLinked(marge, maggie)
 
-  assertPerson(await assertRead(homer), [marge], [], [bart, lisa, maggie], [], []);
-  assertPerson(await assertRead(marge), [], [homer], [bart, lisa, maggie], [], []);
-  assertPerson(await assertRead(bart), [], [], [], [homer, marge], [lisa, maggie]);
-  assertPerson(await assertRead(lisa), [], [], [], [homer, marge], [bart, maggie]);
-  assertPerson(await assertRead(maggie), [], [], [], [homer, marge], [bart, lisa]);
+  assertPerson(await assertRead(homer), {wifes: [marge], children: [bart, lisa, maggie]});
+  assertPerson(await assertRead(marge), {husbands: [homer], children: [bart, lisa, maggie]});
+  assertPerson(await assertRead(bart), {parents: [homer, marge], siblings: [lisa, maggie]});
+  assertPerson(await assertRead(lisa), {parents: [homer, marge], siblings: [bart, maggie]});
+  assertPerson(await assertRead(maggie), {parents: [homer, marge], siblings: [bart, lisa]});
 
   await assertDelete(homer);
   await assertDelete(marge);

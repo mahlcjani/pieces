@@ -3,7 +3,7 @@ import { screen, setup } from "@/lib/test-utils";
 import dayjs from "@/lib/dayjs";
 
 import { type Person } from "@/lib/actions/types";
-import testData from "@/lib/test-data.json"
+import testData from "@/lib/test-data.json" assert { type: "json" };
 
 // Components under tests
 import { AddPersonForm, ShowEditPerson } from "./person";
