@@ -32,6 +32,7 @@ jobs:
 
       # Run component tests even if build failed
       - name: Test components
+        id: componentTests
         if: always()
         continue-on-error: true
         run: |
@@ -44,13 +45,9 @@ jobs:
         run: |
           bin/neo4j-init --script src/lib/data/kennedies.cypher
 
-      - name: Always Fail
-        id: brokenStep
-        continue-on-error: true
-        run: cat missing-file
-
       # Run API tests
       - name: Test API
+        id: apiTests
         if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
         continue-on-error: true
         run: |
@@ -58,6 +55,7 @@ jobs:
 
       # Run end to end tests
       - name: Test UI
+        id: e2eTests
         if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
         continue-on-error: true
         run: |
@@ -65,6 +63,7 @@ jobs:
 
       # Run k6
       - name: Load test
+        id: loadTests
         if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
         continue-on-error: true
         run: |
@@ -84,7 +83,13 @@ jobs:
 
       # Conclude overall result
       - name: Check status
-        if: steps.brokenStep.outcome != 'success'
+        if: always()
         run: |
-          echo job failed.
-          exit 1
+          [[ ${{ steps.build.outcome }} == "success" ]] || {
+            echo "'Build' step failed."
+            exit 1
+          }
+          [[ ${{ steps.apiTests.outcome }} == "success" ]] || {
+            echo "'Test API' step failed."
+            exit 1
+          }
