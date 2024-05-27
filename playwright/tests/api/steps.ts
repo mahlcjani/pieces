@@ -17,7 +17,6 @@ export class Steps {
     return json;
   }
 
-
   async calendar(title: string, {since, until}: {since: Date|string, until: Date|string}): Promise<any> {
     return await test.step(title, async () => {
       const response = await this.api.get({calendar:{}}, {

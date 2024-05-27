@@ -4,7 +4,7 @@
  * Server side actions for calendar
  */
 
-import dayjs from "dayjs";
+import dayjs from "../dayjs";
 
 import {
   type RecordShape,
@@ -26,46 +26,84 @@ import { unstable_noStore as noStore } from "next/cache";
 export async function fetchEvents(since: string|Date, until: string|Date = since) {
   noStore();
 
+  // make one or two searches depending on date
+
+  const start = dayjs(since);
+  const end = dayjs(until);
+
+  // check no longer than year
+  if (!end.isAfter(start)) {
+    // TODO: wrong can be also equal!
+    throw `${until} should be after ${start}}`;
+  }
+
+  if (end.diff(start, "day") > 366 || start.isLeapYear() && end.diff(start, "day") > 367) {
+    throw "to wide range"
+  }
+
+  if (end.year() > start.year()) {
+    // 2 searches
+    const split = dayjs(new Date(end.year(), 0, 1));
+    console.log(`${start}-${split}`)
+    console.log(`${split}-${end}`)
+
+
+    return (await fetchEvents_(start, split)).concat(await fetchEvents_(split, end));
+
+  } else {
+    console.log(`${start}-${end}`)
+    return await fetchEvents_(start, end);
+
+  }
+
+
+
+}
+
+async function fetchEvents_(since: dayjs.Dayjs, until: dayjs.Dayjs) {
+
+
   const session = await getSession();
 
   try {
     const result: QueryResult<RecordShape<string, any>> = await session.executeRead(tx =>
       tx.run(`
+      CALL {
         WITH date($start) AS start, date($end) AS end
-        UNWIND [days IN range(0, duration.inDays(start, end).days) |
-          start + duration({days:days})] AS day
         MATCH (w:Woman)-[m:IS_MARRIED_TO]-(p)
-        WHERE day > m.beginDate AND m.beginDate.month = day.month AND m.beginDate.day = day.day
-        WITH *, {person: w} AS wife, {person: p} AS husband
+        WHERE m.beginDate IS NOT NULL
+          AND start <= date({year: start.year, month: m.beginDate.month, day: m.beginDate.day}) <= end
+        WITH *, {person: w} AS wife, {person: p} AS husband, date({year: start.year, month: m.beginDate.month, day: m.beginDate.day}) AS eventDate
         RETURN "Marriage" AS eventType,
-          day AS eventDate,
-          duration.between(m.beginDate, day).years AS anniversary,
-          [wife, husband] AS people
+            eventDate,
+            duration.between(m.beginDate, eventDate).years AS anniversary,
+            [wife, husband] AS people
         UNION
         WITH date($start) AS start, date($end) AS end
-        UNWIND [days IN range(0, duration.inDays(start, end).days) |
-          start + duration({days:days})] AS day
         MATCH (p:Person)
-        WHERE day > p.birthDate AND p.birthDate.month = day.month AND p.birthDate.day = day.day
-        WITH *, {person: p} AS person
+        WHERE p.birthDate IS NOT NULL
+          AND start <= date({year: start.year, month: p.birthDate.month, day: p.birthDate.day}) <= end
+        WITH *, {person: p} AS person, date({year: start.year, month: p.birthDate.month, day: p.birthDate.day}) AS eventDate
         RETURN "Birthday" AS eventType,
-          day AS eventDate,
-          duration.between(p.birthDate, day).years AS anniversary,
+          eventDate,
+          duration.between(p.birthDate, eventDate).years AS anniversary,
           [person] AS people
         UNION
         WITH date($start) AS start, date($end) AS end
-        UNWIND [days IN range(0, duration.inDays(start, end).days) |
-          start + duration({days:days})] AS day
         MATCH (p:Person)
-        WHERE day > p.birthDate AND p.nameDate.month = day.month AND p.nameDate.day = day.day
-        WITH *, {person: p} AS person
+        WHERE start <= date({year: start.year, month: p.nameDate.month, day: p.nameDate.day}) <= end
+        WITH *, {person: p} AS person, date({year: start.year, month: p.nameDate.month, day: p.nameDate.day}) AS eventDate
         RETURN "Nameday" AS eventType,
-          day AS eventDate,
+          eventDate,
           0 AS anniversary,
-          [person] AS people`,
+          [person] AS people
+      }
+      RETURN *
+      ORDER BY eventDate
+      `,
         {
-          start: dayjs(since).format("YYYY-MM-DD"),
-          end: dayjs(until).format("YYYY-MM-DD")
+          start: since.format("YYYY-MM-DD"),
+          end: until.format("YYYY-MM-DD")
         }
       )
     );
