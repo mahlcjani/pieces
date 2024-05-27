@@ -44,6 +44,11 @@ jobs:
         run: |
           bin/neo4j-init --script src/lib/data/kennedies.cypher
 
+      - name: Always Fail
+        id: brokenStep
+        continue-on-error: true
+        run: cat missing-file
+
       # Run API tests
       - name: Test API
         if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
@@ -76,3 +81,10 @@ jobs:
             playwright/reports
             cypress/test-results
           if-no-files-found: ignore
+
+      # Conclude overall result
+      - name: Check status
+        if: steps.brokenStep.outcome != 'success'
+        run: |
+          echo job failed.
+          exit 1
