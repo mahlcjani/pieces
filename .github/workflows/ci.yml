@@ -89,7 +89,19 @@ jobs:
             echo "'Build' step failed."
             exit 1
           }
+          [[ ${{ steps.componentTests.outcome }} == "success" ]] || {
+            echo "'Test components' step failed."
+            exit 1
+          }
           [[ ${{ steps.apiTests.outcome }} == "success" ]] || {
             echo "'Test API' step failed."
+            exit 1
+          }
+          [[ ${{ steps.e2eTests.outcome }} == "success" ]] || {
+            echo "'Test UI' step failed."
+            exit 1
+          }
+          [[ ${{ steps.loadTests.outcome }} == "success" ]] || {
+            echo "'Load tests' step failed."
             exit 1
           }
