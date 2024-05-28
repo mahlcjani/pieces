@@ -45,9 +45,9 @@ jobs:
         continue-on-error: true
         run: |
           bin/neo4j-init --script src/lib/data/kennedies.cypher
-          npm start >/dev/null &
+          mkdir -p playwright/reports & npm start 2>& playwright/reports/server.log &
           nix-shell --run "npx playwright test"
-          killall node
+          kill $(ps -ef | grep next-server | grep -v grep | awk '{print $2}')
 
       # Run end to end tests
       - name: Test UI
@@ -56,9 +56,9 @@ jobs:
         continue-on-error: true
         run: |
           bin/neo4j-init --script src/lib/data/kennedies.cypher
-          npm start >/dev/null &
+          mkdir -p cypress/reports & npm start 2>& cypress/reports/server.log &
           nix-shell --run "npx cypress run --browser firefox"
-          killall node
+          kill $(ps -ef | grep next-server | grep -v grep | awk '{print $2}')
 
       # Run k6
       - name: Load test
@@ -67,9 +67,9 @@ jobs:
         continue-on-error: true
         run: |
           bin/neo4j-init --script src/lib/data/kennedies.cypher
-          npm start >/dev/null &
+          mkdir -p k6/reports & npm start 2>& k6/reports/server.log &
           nix-shell --run "k6 run k6/calendar.js"
-          killall node
+          kill $(ps -ef | grep next-server | grep -v grep | awk '{print $2}')
 
       # Archive results
       - name: Archive test results
@@ -80,7 +80,8 @@ jobs:
           path: |
             reports
             playwright/reports
-            cypress/test-results
+            cypress/reports
+            k6/reports
           if-no-files-found: ignore
 
       # Conclude overall result
