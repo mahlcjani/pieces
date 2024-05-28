@@ -38,38 +38,38 @@ jobs:
         run: |
           nix-shell --run "npm run test"
 
-      # Start neo4j server, populate it with test data and start the app
-      - name: Start system
-        id: start
-        if: always() && steps.build.outcome == 'success'
-        run: |
-          bin/neo4j-init --script src/lib/data/kennedies.cypher
-          npm start >/dev/null &
-          echo Started
-
       # Run API tests
       - name: Test API
         id: apiTests
-        if: always() && steps.build.outcome == 'success' && steps.start.outcome == 'success'
+        if: always() && steps.build.outcome == 'success'
         continue-on-error: true
         run: |
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
+          npm start >/dev/null &
           nix-shell --run "npx playwright test"
+          killall node
 
       # Run end to end tests
       - name: Test UI
         id: e2eTests
-        if: always() && steps.build.outcome == 'success' && steps.start.outcome == 'success'
+        if: always() && steps.build.outcome == 'success'
         continue-on-error: true
         run: |
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
+          npm start >/dev/null &
           nix-shell --run "npx cypress run --browser firefox"
+          killall node
 
       # Run k6
       - name: Load test
         id: loadTests
-        if: always() && steps.build.outcome == 'success' && steps.start.outcome == 'success'
+        if: always() && steps.build.outcome == 'success'
         continue-on-error: true
         run: |
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
+          npm start >/dev/null &
           nix-shell --run "k6 run k6/calendar.js"
+          killall node
 
       # Archive results
       - name: Archive test results
