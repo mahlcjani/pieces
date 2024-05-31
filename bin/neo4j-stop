@@ -7,12 +7,17 @@ declare -r BIN_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null &&
 declare -r PROJECT_DIR="$(dirname "${BIN_DIR}")"
 
 declare neo4j_home=/var/tmp/neo4j
+declare force_stop=false
 
 while (( "$#" )); do
     case "$1" in
         -h|--home)
             neo4j_home="$2"
             shift 2
+            ;;
+        -f|--force)
+            force_stop=true
+            shift 1
             ;;
         *)
             echo "Unknown option: $1"
@@ -27,4 +32,8 @@ done
 }
 
 NEO4J_HOME="${neo4j_home}" neo4j-admin server stop
+
+if [[ ${force_stop} == "true" && -f "${neo4j_home}/run/neo4j.pid" ]]; then
+    kill -9 $(cat "${neo4j_home}/run/neo4j.pid")
+fi
 

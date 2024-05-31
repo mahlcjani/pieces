@@ -22,6 +22,8 @@ jobs:
         run: |
           nix-shell bin/shell.nix --run "echo neo4j installed."
           nix-shell --run "npx playwright install chromium --with-deps; echo Development tools installed."
+          # Create dirs
+          mkdir -p reports playwright/reports cypress/reports k6/reports
 
       # Build the app
       - name: Build
@@ -38,36 +40,39 @@ jobs:
         run: |
           nix-shell --run "npm run test"
 
-      # Start neo4j server and populate it with test data
-      - name: Start neo4j
-        id: neo4j
-        if: always() && steps.build.outcome == 'success'
-        run: |
-          bin/neo4j-init --script src/lib/data/kennedies.cypher
-
       # Run API tests
       - name: Test API
         id: apiTests
-        if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+        if: always() && steps.build.outcome == 'success'
         continue-on-error: true
         run: |
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
+          npm start &> playwright/reports/server.log &
           nix-shell --run "npx playwright test"
 
       # Run end to end tests
       - name: Test UI
         id: e2eTests
-        if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+        if: always() && steps.build.outcome == 'success'
         continue-on-error: true
         run: |
-          nix-shell --run "npm start & npx cypress run --browser firefox"
+          # Kill server if running
+          kill `ps -ef | grep next-server | grep -v grep | awk '{print $2}'` ||:
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
+          npm start &> cypress/reports/server.log &
+          nix-shell --run "npx cypress run --browser firefox"
 
       # Run k6
       - name: Load test
         id: loadTests
-        if: always() && steps.build.outcome == 'success' && steps.neo4j.outcome == 'success'
+        if: always() && steps.build.outcome == 'success'
         continue-on-error: true
         run: |
-          nix-shell --run "npm start >/dev/null & k6 run k6/calendar.js"
+          # Kill server if running
+          kill `ps -ef | grep next-server | grep -v grep | awk '{print $2}'` ||:
+          bin/neo4j-init --script src/lib/data/kennedies.cypher
+          npm start &> k6/reports/server.log &
+          nix-shell --run "k6 run k6/calendar.js"
 
       # Archive results
       - name: Archive test results
@@ -78,7 +83,8 @@ jobs:
           path: |
             reports
             playwright/reports
-            cypress/test-results
+            cypress/reports
+            k6/reports
           if-no-files-found: ignore
 
       # Conclude overall result

@@ -15,7 +15,8 @@ import neo4j, {
 export {
   default as neo4j,
   type RecordShape,
-  type QueryResult
+  type QueryResult,
+  Session
 } from "neo4j-driver";
 
 // Properties are not exported :(

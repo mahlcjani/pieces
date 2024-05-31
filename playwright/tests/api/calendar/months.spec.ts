@@ -912,6 +912,102 @@ test("should return anniversaries for December 2000", async ({ steps }) => {
   });
 });
 
+test("should return anniversaries for December 2000 and January 2001", async ({ steps }) => {
+  await test.step("", async () => {
+    const events = await steps.calendar("fetch events", {
+      since: "2000-12-01",
+      until: "2001-02-01",
+    });
+
+    expect(events, "expect birthdays of [Mary, William, Rory] and [Carolyn, Matthew, Patrick, Robert, Jack]").toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2000-12-06",
+          "people": [
+            expect.objectContaining({
+              "name": "Mary Augusta Kennedy",
+              "birthDate": "1857-12-06"
+            })
+          ]
+        }),
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2000-12-10",
+          "people": [
+            expect.objectContaining({
+              "name": "William John Robert Cavendish",
+              "birthDate": "1917-12-10"
+            })
+          ]
+        }),
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2000-12-12",
+          "people": [
+            expect.objectContaining({
+              "name": "Rory Elizabeth Katherine Kennedy",
+              "birthDate": "1968-12-12"
+            })
+          ]
+        }),
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2001-01-07",
+          "people": expect.arrayContaining([
+            expect.objectContaining({
+              "name": "Carolyn Jeanne Bessette-Kennedy",
+              "birthDate": "1966-01-07"
+            })
+          ])
+        }),
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2001-01-11",
+          "people": expect.arrayContaining([
+            expect.objectContaining({
+              "name": "Matthew Maxwell Taylor Kennedy",
+              "birthDate": "1965-01-11"
+            })
+          ])
+        }),
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2001-01-14",
+          "people": expect.arrayContaining([
+            expect.objectContaining({
+              "name": "Patrick Joseph Kennedy",
+              "birthDate": "1858-01-14"
+            })
+          ])
+        }),
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2001-01-17",
+          "people": expect.arrayContaining([
+            expect.objectContaining({
+              "name": "Robert Francis Kennedy Jr.",
+              "birthDate": "1954-01-17"
+            })
+          ])
+        }),
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2001-01-19",
+          "people": expect.arrayContaining([
+            expect.objectContaining({
+              "name": "Jack Schlossberg",
+              "birthDate": "1993-01-19"
+            })
+          ])
+        }),
+      ])
+    );
+  });
+});
+
+
+
 const expectBirthday = (events: any, date: string, person: any) => {
   expect(events, `expect birthday of ${person.name}`).toEqual(
     expect.arrayContaining([
