@@ -22,6 +22,8 @@ jobs:
         run: |
           nix-shell bin/shell.nix --run "echo neo4j installed."
           nix-shell --run "npx playwright install chromium --with-deps; echo Development tools installed."
+          # Create dirs
+          mkdir -p reports playwright/reports cypress/reports k6/reports
 
       # Build the app
       - name: Build
@@ -45,7 +47,7 @@ jobs:
         continue-on-error: true
         run: |
           bin/neo4j-init --script src/lib/data/kennedies.cypher
-          mkdir -p playwright/reports & npm start 2>& playwright/reports/server.log &
+          npm start &> playwright/reports/server.log &
           nix-shell --run "npx playwright test"
 
       # Run end to end tests
@@ -55,9 +57,9 @@ jobs:
         continue-on-error: true
         run: |
           # Kill server if running
-          kill $(ps -ef | grep next-server | grep -v grep | awk '{print $2}') ||:
+          kill `ps -ef | grep next-server | grep -v grep | awk '{print $2}'` ||:
           bin/neo4j-init --script src/lib/data/kennedies.cypher
-          mkdir -p cypress/reports & npm start 2>& cypress/reports/server.log &
+          npm start &> cypress/reports/server.log &
           nix-shell --run "npx cypress run --browser firefox"
 
       # Run k6
@@ -67,9 +69,9 @@ jobs:
         continue-on-error: true
         run: |
           # Kill server if running
-          kill $(ps -ef | grep next-server | grep -v grep | awk '{print $2}') ||:
+          kill `ps -ef | grep next-server | grep -v grep | awk '{print $2}'` ||:
           bin/neo4j-init --script src/lib/data/kennedies.cypher
-          mkdir -p k6/reports & npm start 2>& k6/reports/server.log &
+          npm start &> k6/reports/server.log &
           nix-shell --run "k6 run k6/calendar.js"
 
       # Archive results
