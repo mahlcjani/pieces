@@ -13,6 +13,11 @@ jobs:
   check:
     name: Check
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
@@ -31,6 +36,11 @@ jobs:
         continue-on-error: true
         run: |
           nix-shell --run "npm run build"
+
+      - name: Scan code
+        uses: JetBrains/qodana-action@v2024.1
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
       # Run component tests even if build failed
       - name: Test components
