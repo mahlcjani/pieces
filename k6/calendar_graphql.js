@@ -10,7 +10,7 @@ export default function() {
   const response = http.post("http://localhost:3000/api/graphql",
     JSON.stringify({
       query: `{
-        calendar(since: "2000-01-01", until: "2001-01-01") {
+        calendar(since: "2000-01-01", until: "2000-12-31") {
           date
           type
           cardinality
@@ -32,7 +32,8 @@ export default function() {
   );
 
   check(response, {
-    "response is 200": (r) => r.status === 200,
-    "there are 80 events": (r) => r.json("#") === 80
+    "response status": (r) => r.status === 200,
+    // We do expect 74 calendar events, 59 birthdays and 15 marriage anniversaries.
+    "events count": (r) => r.json("data.calendar.#") === 74
   });
 }

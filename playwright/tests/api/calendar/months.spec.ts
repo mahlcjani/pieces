@@ -7,7 +7,7 @@ test("should return anniversaries for January 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-01-01",
-      until: "2000-02-01",
+      until: "2000-01-31",
     });
 
     expect(events, "expect birthdays of Carolyn, Matthew, Patrick, Robert and Jack").toEqual(
@@ -71,7 +71,7 @@ test("should return anniversaries for February 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-02-01",
-      until: "2000-03-01",
+      until: "2000-02-28",
     });
 
     expect(events, "expect birthdays of Mark, Kathleen, Jean, Edward, Victoria, Michael and Kara").toEqual(
@@ -155,7 +155,7 @@ test("should return anniversaries for March 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-03-01",
-      until: "2000-04-01",
+      until: "2000-03-31",
     });
 
     expect(events, "expect birthdays of Francis and Douglas").toEqual(
@@ -189,7 +189,7 @@ test("should return anniversaries for April 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-04-01",
-      until: "2000-05-01",
+      until: "2000-04-30",
     });
 
     expect(events, "expect birthdays of Margaret, Ethel and Robert, marriages of Patricia and Peter, Maria and Arnold").toEqual(
@@ -258,7 +258,7 @@ test("should return anniversaries for May 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-05-01",
-      until: "2000-06-01",
+      until: "2000-05-31",
     });
 
     expect(events, "expect birthdays of Charles, Tatiana, Patricia, JFK and Thomas, marriages of Kathleen and William, Jean and Stephen, Eunice and Robert").toEqual(
@@ -361,7 +361,7 @@ test("should return anniversaries for June 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-06-01",
-      until: "2000-07-01",
+      until: "2000-06-30",
     });
 
     expect(events, "expect birthdays of George, David and Rose, marriages of Joseph and Rose, Mary and George").toEqual(
@@ -432,7 +432,7 @@ test("should return anniversaries for July 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-07-01",
-      until: "2000-08-01",
+      until: "2000-07-31",
     });
 
     expectBirthday(events, "2000-07-04", {
@@ -521,7 +521,7 @@ test("should return anniversaries for August 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-08-01",
-      until: "2000-09-01",
+      until: "2000-08-31",
     });
 
     expect(events, "expect birthdays of Mary, Patrick, Charles, Arabella and Timothy").toEqual(
@@ -585,7 +585,7 @@ test("should return anniversaries for September 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-09-01",
-      until: "2000-10-01",
+      until: "2000-09-30",
     });
 
     expect(events, "expect birthdays of Virginia, Joseph, and 9 more, marriages of JFK and Jacqueline, John and Carolyn").toEqual(
@@ -715,7 +715,7 @@ test("should return anniversaries for October 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-10-01",
-      until: "2000-11-01",
+      until: "2000-10-31",
     });
 
     expect(events, "expect birthdays of Mary and Margaret, marriages of Joseph and Rose, Mary and George").toEqual(
@@ -775,7 +775,7 @@ test("should return anniversaries for November 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-11-01",
-      until: "2000-12-01",
+      until: "2000-11-30",
     });
 
     expect(events, "expect birthdays of [Maria, Robert, RFK, John, Caroline] marriages of [Patrick and Mary, Edward and Virginia]").toEqual(
@@ -866,7 +866,7 @@ test("should return anniversaries for December 2000", async ({ steps }) => {
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-12-01",
-      until: "2001-01-01",
+      until: "2000-12-31",
     });
 
     expectBirthday(events, "2000-12-06", {
@@ -916,7 +916,7 @@ test("should return anniversaries for December 2000 and January 2001", async ({ 
   await test.step("", async () => {
     const events = await steps.calendar("fetch events", {
       since: "2000-12-01",
-      until: "2001-02-01",
+      until: "2001-01-31",
     });
 
     expect(events, "expect birthdays of [Mary, William, Rory] and [Carolyn, Matthew, Patrick, Robert, Jack]").toEqual(
@@ -1006,7 +1006,39 @@ test("should return anniversaries for December 2000 and January 2001", async ({ 
   });
 });
 
+test("should return anniversaries for September 24th, 2000", async ({ steps }) => {
+  await test.step("", async () => {
+    const events = await steps.calendar("fetch events", {
+      since: "2000-09-24",
+      until: "2000-09-24",
+    });
 
+    expect(events, "expect birthdays of Joseph and Stephen").toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2000-09-24",
+          "people": expect.arrayContaining([
+            expect.objectContaining({
+              "name": "Joseph Patrick Kennedy II",
+              "birthDate": "1952-09-24"
+            })
+          ])
+        }),
+        expect.objectContaining({
+          "type": "Birthday",
+          "date": "2000-09-24",
+          "people": expect.arrayContaining([
+            expect.objectContaining({
+              "name": "Stephen Edward Smith",
+              "birthDate": "1927-09-24"
+            })
+          ])
+        }),
+      ])
+    );
+  });
+});
 
 const expectBirthday = (events: any, date: string, person: any) => {
   expect(events, `expect birthday of ${person.name}`).toEqual(
