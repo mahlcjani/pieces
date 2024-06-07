@@ -77,42 +77,17 @@ const typeDefs = gql`
     spouses(pid: ID!): [Person!]!
     # Fetch person's children
     children(pid: ID!): [Parentage!]!
+    childrenOnly(pid: ID!): [Person!]!
     # Fetch person's siblings
     siblings(pid: ID!): [Person!]!
     # Fetch person's parents
     parents(pid: ID!):  [Parentage!]!
+    parentsOnly(pid: ID!):  [Person!]!
     # Fetch person's mother
     mother(pid: ID!): Person
     # Fetch person's father
     father(pid: ID!): Person
   }
-
-"""
-  Compose query to get more information
-  query($id: ID!) {
-    person(id: $id) {
-      name
-    }
-    marriages(pid: $id) {
-      id
-      beginDate
-      endDate
-      endCause
-      wife {
-        id
-        name
-      }
-      husband {
-        id
-        name
-      }
-    }
-    siblings(pid: $id) {
-      id
-      name
-    }
-  }
- """
 `;
 
 type CalendarArgs = {
@@ -128,45 +103,53 @@ type PeopleArgs = {
 
 const resolvers = {
   Query: {
-    calendar: async (parentResolver: never, {since, until}: CalendarArgs) => {
+    calendar: async (_: never, {since, until}: CalendarArgs) => {
       return await fetchEvents(since, until);
     },
 
-    people: async (parentResolver: never, {query, offset, limit}: PeopleArgs) => {
+    people: async (_: never, {query, offset, limit}: PeopleArgs) => {
       return await fetchPeople(query, offset, limit);
     },
 
-    person: async (parentResolver: never, {id}: {id: string}) => {
+    person: async (_: never, {id}: {id: string}) => {
       return await fetchPerson(id);
     },
 
-    marriages: async (parentResolver: never, {pid}: {pid: string}) => {
+    marriages: async (_: never, {pid}: {pid: string}) => {
       return await fetchMarriages(pid);
     },
 
-    spouses: async (parentResolver: never, {pid}: {pid: string}) => {
+    spouses: async (_: never, {pid}: {pid: string}) => {
       return (await fetchMarriages(pid)).map((m) => m.wife.id === pid ? m.husband : m.wife);
     },
 
-    children: async (parentResolver: never, {pid}: {pid: string}) => {
+    children: async (_: never, {pid}: {pid: string}) => {
       return await fetchChildren(pid);
     },
 
-    parents: async (parentResolver: never, {pid}: {pid: string}) => {
+    childrenOnly: async (_: never, {pid}: {pid: string}) => {
+      return (await fetchChildren(pid)).map((r) => r.child);
+    },
+
+    parents: async (_: never, {pid}: {pid: string}) => {
       return await fetchParents(pid);
     },
 
-    mother: async (parentResolver: never, {pid}: {pid: string}) => {
+    parentsOnly: async (_: never, {pid}: {pid: string}) => {
+      return (await fetchParents(pid)).map((r) => r.parent);
+    },
+
+    mother: async (_: never, {pid}: {pid: string}) => {
       const parentage = (await fetchParents(pid)).find((p) => p.parent.sex == "Woman");
       return parentage ? parentage.parent : null
     },
 
-    father: async (parentResolver: never, {pid}: {pid: string}) => {
+    father: async (_: never, {pid}: {pid: string}) => {
       const parentage = (await fetchParents(pid)).find((p) => p.parent.sex == "Man");
       return parentage ? parentage.parent : null
     },
 
-    siblings: async (parentResolver: never, {pid}: {pid: string}) => {
+    siblings: async (_: never, {pid}: {pid: string}) => {
       return await fetchSiblings(pid);
     },
   },
