@@ -9,7 +9,7 @@ declare -r PROJECT_DIR="$(dirname "${BIN_DIR}")"
 declare neo4j_home=/var/tmp/neo4j
 declare neo4j_user="neo4j"
 declare neo4j_password="nosecret"
-declare neo4j_script="${PROJECT_DIR}/src/lib/data/house-of-windsor.cypher"
+declare neo4j_script="${PROJECT_DIR}/src/lib/data/kennedies.cypher"
 
 while (( "$#" )); do
     case "$1" in

@@ -10,7 +10,7 @@ test("should find Josephs", async ({ steps }) => {
     offset: 0
   });
 
-  expect(result, "search result inlcudes Joseph Patrick Kennedy Sr. and Jr").toEqual(
+  expect(result, "search result includes Joseph Patrick Kennedy Sr. and Jr").toEqual(
     expect.arrayContaining([
       expect.objectContaining({"name": "Joseph Patrick Kennedy Sr."}),
       expect.objectContaining({"name": "Joseph Patrick Kennedy Jr."})
@@ -25,7 +25,7 @@ test("should find Burkes'", async ({ steps }) => {
     offset: 0
   });
 
-  expect(result, "search result inlcudes Burke family").toEqual(
+  expect(result, "search result includes Burke family").toEqual(
     expect.arrayContaining([
       expect.objectContaining({"name": "Margaret Louise Burke"}),
       expect.objectContaining({"name": "Charles Joseph Burke"}),

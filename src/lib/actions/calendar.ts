@@ -30,14 +30,12 @@ export async function fetchEvents(since: string|Date, until: string|Date = since
   const start = dayjs(since);
   const end = dayjs(until);
 
-  // check no longer than year
-  if (!end.isAfter(start)) {
-    // TODO: wrong can be also equal!
-    throw `${until} should be after ${start}}`;
+  if (start.isAfter(end)) {
+    throw `${until} should be after ${since}}`;
   }
 
   if (end.diff(start, "day") > 366 || start.isLeapYear() && end.diff(start, "day") > 367) {
-    throw "to wide range"
+    throw "too wide range (more than a year"
   }
 
   const session = await getSession();
@@ -45,10 +43,10 @@ export async function fetchEvents(since: string|Date, until: string|Date = since
   try {
     if (end.year() > start.year()) {
       const split = dayjs(new Date(end.year(), 0, 1));
-      return (await internallFetchEvents(session, start, split)).concat(
-        await internallFetchEvents(session, split, end));
+      return (await doFetchEvents(session, start, split)).concat(
+        await doFetchEvents(session, split, end));
     } else {
-      return await internallFetchEvents(session, start, end);
+      return await doFetchEvents(session, start, end);
     }
   }
   catch (e) {
@@ -61,7 +59,7 @@ export async function fetchEvents(since: string|Date, until: string|Date = since
   return [];
 }
 
-async function internallFetchEvents(session: Session, since: dayjs.Dayjs, until: dayjs.Dayjs) {
+async function doFetchEvents(session: Session, since: dayjs.Dayjs, until: dayjs.Dayjs) {
   const result: QueryResult<RecordShape<string, any>> = await session.executeRead(tx =>
     tx.run(`
     CALL {
@@ -87,7 +85,8 @@ async function internallFetchEvents(session: Session, since: dayjs.Dayjs, until:
       UNION
       WITH date($start) AS start, date($end) AS end
       MATCH (p:Person)
-      WHERE start <= date({year: start.year, month: p.nameDate.month, day: p.nameDate.day}) <= end
+      WHERE p.nameDate IS NOT NULL
+        AND start <= date({year: start.year, month: p.nameDate.month, day: p.nameDate.day}) <= end
       WITH *, {person: p} AS person, date({year: start.year, month: p.nameDate.month, day: p.nameDate.day}) AS eventDate
       RETURN "Nameday" AS eventType,
         eventDate,
@@ -104,8 +103,9 @@ async function internallFetchEvents(session: Session, since: dayjs.Dayjs, until:
     )
   );
 
-  console.log(result);
+  console.log(result.summary);
   console.log(result.records);
+  console.log(`Nb. of records ${result.records.length}`);
 
   return result.records.map(row => {
     return {

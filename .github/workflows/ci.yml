@@ -73,6 +73,7 @@ jobs:
           bin/neo4j-init --script src/lib/data/kennedies.cypher
           npm start &> k6/reports/server.log &
           nix-shell --run "k6 run k6/calendar.js"
+          nix-shell --run "k6 run k6/calendar_graphql.js"
 
       # Archive results
       - name: Archive test results
