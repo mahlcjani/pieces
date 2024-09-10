@@ -27,6 +27,7 @@
     "@mantine/hooks": "^7.9.0",
     "@mantine/modals": "^7.9.0",
     "@tabler/icons-react": "^3.3.0",
+    "d3-dsv": "^3.0.1",
     "dayjs": "^1.11.11",
     "graphql-tag": "^2.12.6",
     "i18next": "^23.8.2",
